@@ -28,7 +28,7 @@ library.pir -- library functions
     .param pmc has_hll :opt_flag
     .local pmc compiler, targetns, symbols, nsiter, library
     .local string lang
-    lang = 'steme'
+    lang = 'reason'
     if null hll goto no_hll
     lang = hll
     compiler = compreg lang
@@ -61,7 +61,7 @@ library.pir -- library functions
     load_language lang
 .end
 
-.HLL 'steme'
+.HLL 'reason'
 # Local Variables:
 #   mode: pir
 #   fill-column: 100

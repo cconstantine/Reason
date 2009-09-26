@@ -54,7 +54,7 @@ END
     my $make = $config{'make'};
     print <<"END";
 
-You can now use '$make' to build Steme.
+You can now use '$make' to build Reason.
 After that, you can use '$make test' to run some local tests.
 
 END
@@ -123,7 +123,7 @@ sub slurp {
 #  Print some help text.
 sub print_help {
     print <<'END';
-Configure.pl - Steme Configure
+Configure.pl - Reason Configure
 
 General Options:
     --help             Show this text

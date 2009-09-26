@@ -2,11 +2,11 @@
 
 =begin overview
 
-This is the grammar for Steme written as a sequence of Perl 6 rules.
+This is the grammar for Reason written as a sequence of Perl 6 rules.
 
 =end overview
 
-grammar Steme::Grammar is PCT::Grammar;
+grammar Reason::Grammar is PCT::Grammar;
 
 rule TOP {
     {*}                                          #= begin

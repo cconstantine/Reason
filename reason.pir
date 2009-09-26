@@ -1,14 +1,14 @@
 =head1 TITLE
 
-steme.pir - A Steme compiler.
+reason.pir - A Reason compiler.
 
 =head2 Description
 
-This is the base file for the Steme compiler.
+This is the base file for the Reason compiler.
 
 This file includes the parsing and grammar rules from
 the src/ directory, loads the relevant PGE libraries,
-and registers the compiler under the name 'Steme'.
+and registers the compiler under the name 'Reason'.
 
 =head2 Functions
 
@@ -16,16 +16,16 @@ and registers the compiler under the name 'Steme'.
 
 =item onload()
 
-Creates the Steme compiler using a C<PCT::HLLCompiler>
+Creates the Reason compiler using a C<PCT::HLLCompiler>
 object.
 
 =cut
 
-.HLL 'steme'
+.HLL 'reason'
 
 .namespace []
 
-.loadlib 'steme_group'
+.loadlib 'reason_group'
 
 .sub '' :anon :load :init
     load_bytecode 'PCT.pbc'
@@ -39,35 +39,35 @@ object.
 .include 'src/gen_grammar.pir'
 .include 'src/gen_actions.pir'
 
-.namespace [ 'Steme';'Compiler' ]
+.namespace [ 'Reason';'Compiler' ]
 .sub 'onload' :anon :load :init
-    .local pmc steme
+    .local pmc reason
     $P0 = get_root_global ['parrot'], 'P6metaclass'
-    steme = $P0.'new_class'('Steme::Compiler', 'parent'=>'PCT::HLLCompiler')
-    steme.'language'('steme')
-    $P0 = get_hll_namespace ['Steme';'Grammar']
-    steme.'parsegrammar'($P0)
-    $P0 = get_hll_namespace ['Steme';'Grammar';'Actions']
-    steme.'parseactions'($P0)
+    reason = $P0.'new_class'('Reason::Compiler', 'parent'=>'PCT::HLLCompiler')
+    reason.'language'('reason')
+    $P0 = get_hll_namespace ['Reason';'Grammar']
+    reason.'parsegrammar'($P0)
+    $P0 = get_hll_namespace ['Reason';'Grammar';'Actions']
+    reason.'parseactions'($P0)
 
     ## Create a list for holding the stack of nested blocks
     $P0 = new 'ResizablePMCArray'
-    set_hll_global ['Steme';'Grammar';'Actions'], '@?BLOCK', $P0
+    set_hll_global ['Reason';'Grammar';'Actions'], '@?BLOCK', $P0
     $P0 = new 'ResizablePMCArray'
-    set_hll_global ['Steme';'Grammar';'Actions'], '@?LIBRARY', $P0
+    set_hll_global ['Reason';'Grammar';'Actions'], '@?LIBRARY', $P0
 .end
 
 =item main(args :slurpy)  :main
 
 Start compilation by passing any command line C<args>
-to the Steme compiler.
+to the Reason compiler.
 
 =cut
 
 .sub 'main' :main
     .param pmc args
 
-    $P0 = compreg 'steme'
+    $P0 = compreg 'reason'
     $P1 = $P0.'command_line'(args)
 .end
 

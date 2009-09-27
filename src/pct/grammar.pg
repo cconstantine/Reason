@@ -39,6 +39,7 @@ token special {
     | <export> {*}                               #= export
     | <import> {*}                               #= import
     | <hllimport> {*}                            #= hllimport
+    | <tcall> {*} 				 #= tcall
 }
 
 rule if {

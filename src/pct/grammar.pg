@@ -34,7 +34,7 @@ token special {
     | <if> {*}                                   #= if
     | <define> {*}                               #= define
     | <let> {*}                                  #= let
-    | <lambda> {*}                               #= lambda
+    | <fn> {*}      	                         #= fn
     | <library> {*}                              #= library
     | <export> {*}                               #= export
     | <import> {*}                               #= import
@@ -70,8 +70,8 @@ rule let {
     {*}                                          #= end
 }
 
-rule lambda {
-    'lambda'
+rule fn {
+    'fn'
     '('
     [
         <var=symbol>
@@ -116,6 +116,10 @@ rule simple {
     <cmd=term>
     [<term> ]*
     {*}
+}
+
+rule tcall {
+     '^' <cmd=term> [<term> ]* {*}
 }
 
 rule value {

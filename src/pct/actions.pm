@@ -102,7 +102,7 @@ method let($/, $key) {
     }
 }
 
-method lambda($/, $key) {
+method fn($/, $key) {
     our @?BLOCK;
     my $block;
     if $key eq 'begin' {
@@ -200,7 +200,27 @@ method simple($/) {
     my $cmd := $<cmd>.ast;
     my $past := PAST::Op.new(
         :pasttype('call'),
+        :node( $/ )
+    );
+    if ~$cmd.WHAT() eq 'PAST::Var()' && $cmd.scope() eq 'package' {
+        $cmd := $cmd.name();
+        $past.name($cmd);
+    }
+    else {
+        $past.push($cmd);
+    }
+    for $<term> {
+        $past.push( $_.ast );
+    }
+    make $past;
+}
+
+method tcall($/) {
+    my $cmd := $<cmd>.ast;
+    my $past := PAST::Op.new(
+        :pasttype('pirop'),
         :node( $/ ),
+        :pirop('tailcall')
     );
     if ~$cmd.WHAT() eq 'PAST::Var()' && $cmd.scope() eq 'package' {
         $cmd := $cmd.name();
@@ -256,6 +276,7 @@ method integer($/) {
 method quote($/) {
     make PAST::Val.new(
         :value( $<string_literal>.ast ),
+        :returns('String'),
         :node($/),
     );
 }

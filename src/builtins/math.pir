@@ -36,6 +36,23 @@ math.pir -- simple implementation of math functions
     .return ($P0)
 .end
 
+.sub '='
+     .param pmc a
+     .param pmc b
+     if a == b goto true
+     .return (0)
+    true:
+     .return (1)
+.end
+
+.sub 'exists'
+     .param pmc val
+
+     unless null val goto true
+     .return (0)
+    true:
+     .return (1)
+.end
 
 # Local Variables:
 #   mode: pir

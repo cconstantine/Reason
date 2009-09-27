@@ -216,6 +216,7 @@ method simple($/) {
 }
 
 method tcall($/) {
+
     my $cmd := $<cmd>.ast;
     my $past := PAST::Op.new(
         :pasttype('pirop'),
@@ -224,12 +225,15 @@ method tcall($/) {
     );
     if ~$cmd.WHAT() eq 'PAST::Var()' && $cmd.scope() eq 'package' {
         $cmd := $cmd.name();
-        $past.name($cmd);
+        say("func: ", $cmd);
+        $past.push($cmd);
     }
     else {
+        say("var: ", $cmd);
         $past.push($cmd);
     }
     for $<term> {
+        say("term: ", $_.ast);
         $past.push( $_.ast );
     }
     make $past;

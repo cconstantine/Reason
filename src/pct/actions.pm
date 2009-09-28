@@ -78,25 +78,38 @@ method let($/, $key) {
     our @?BLOCK;
     my $block;
     if $key eq 'begin' {
+        say("begin");
         $block := PAST::Block.new( :blocktype('immediate'), :node($/) );
+        @?BLOCK.unshift($block);
+    }
+    elsif $key eq 'item' {
+        say("start item");
+        $block := @?BLOCK.shift();
         my $init := PAST::Stmts.new();
-        for $<var> {
-            my $var := $_.ast;
-            my $val := $<val>.shift.ast;
+        #for $<var> {
+            my $var := $<var>.shift.ast;
             $var.scope('lexical');
             $var.isdecl(1);
             $block.symbol($var.name(), :scope('lexical'));
+
+            my $val := $<val>.shift.ast;
             $init.push( PAST::Op.new( $var, $val, :pasttype('bind')));
-        }
-        $block.unshift($init);
+            say("Registered: ", $var.name());
+        #}
+        say("about to push");
+        $block.push($init);
         @?BLOCK.unshift($block);
+        say("end item");
     }
     else {
+        say("statments");
         my $stmts := PAST::Stmts.new();
         for $<statement> {
             $stmts.push( $_.ast );
         }
+        say("built");
         $block := @?BLOCK.shift();
+        say("shifted");
         $block.push($stmts);
         make $block;
     }
@@ -204,19 +217,22 @@ method simple($/) {
     );
     if ~$cmd.WHAT() eq 'PAST::Var()' && $cmd.scope() eq 'package' {
         $cmd := $cmd.name();
+        say("func: ", $cmd);
         $past.name($cmd);
     }
     else {
         $past.push($cmd);
+        say("var: ", $cmd);
     }
     for $<term> {
+        say("term: ", $_.ast.name());
         $past.push( $_.ast );
     }
     make $past;
 }
 
 method tcall($/) {
-
+    say("tcall begin");
     my $cmd := $<cmd>.ast;
     my $past := PAST::Op.new(
         :pasttype('pirop'),
@@ -233,9 +249,10 @@ method tcall($/) {
         $past.push($cmd);
     }
     for $<term> {
-        say("term: ", $_.ast);
+        say("term: ", $_.ast.name());
         $past.push( $_.ast );
     }
+    say("tcall end");
     make $past;
 }
 
@@ -255,11 +272,13 @@ method symbol($/) {
     our @?BLOCK;
     my $scope := 'package';
     my $name := ~$<symbol>;
+    say("Finding: ", $name);
     for @?BLOCK {
         if $_.symbol($name) && $scope eq 'package' {
             $scope := $_.symbol($name)<scope>;
         }
     }
+    say("scope: ", $scope);
     make PAST::Var.new(
         :name( $name ),
         :scope( $scope ),

@@ -58,15 +58,15 @@ rule define {
 }
 
 rule let {
-    'let'
+    'let' {*}					#= begin
     '('
     [
         '('
         <var=symbol>
         <val=term>
-        ')'
+        ')' {*}                                 #= item
     ]+
-    ')' {*}                                      #= begin
+    ')'
     <statement>+
     {*}                                          #= end
 }

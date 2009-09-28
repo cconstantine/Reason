@@ -239,15 +239,10 @@ method tcall($/) {
         :node( $/ ),
         :pirop('tailcall')
     );
-    if ~$cmd.WHAT() eq 'PAST::Var()' && $cmd.scope() eq 'package' {
-        $cmd := $cmd.name();
-        say("func: ", $cmd);
-        $past.push($cmd);
-    }
-    else {
-        say("var: ", $cmd);
-        $past.push($cmd);
-    }
+
+    say("func: ", $cmd);
+    $past.push($cmd);
+
     for $<term> {
         say("term: ", $_.ast.name());
         $past.push( $_.ast );

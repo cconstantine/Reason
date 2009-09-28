@@ -62,9 +62,9 @@ rule let {
     '('
     [
         '('
-        <var=symbol>
-        <val=term>
-        ')' {*}                                 #= item
+        <var=symbol> {*}  #= var
+        <val=term>   {*}  #= val
+        ')'
     ]+
     ')'
     <statement>+

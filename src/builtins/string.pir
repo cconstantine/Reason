@@ -23,7 +23,7 @@ string.pir -- extra string functions
 
 .namespace ['String']
 
-.sub invoke :vtable
+.sub invoke :method :vtable
      .param pmc args	:slurpy
      
      $P0 = shift args

@@ -24,8 +24,9 @@ token ws {
 rule statement {
     '('
     [
-        | <special> {*}                          #= special
-        | <simple> {*}                           #= simple
+	| <cons> {*}
+##        | <special> {*}                          #= special
+##        | <simple> {*}                           #= simple
     ]
     ')'
 }
@@ -119,6 +120,9 @@ rule simple {
     {*}
 }
 
+rule cons {
+    [<term> ]* {*}
+}
 rule tcall {
      '^' <cmd=term> [<term> ]* {*}
 }

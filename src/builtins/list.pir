@@ -34,6 +34,10 @@ list.pir -- simple implementation list functions
      .return ($P0)
 .end
 
+.sub 'safoo'
+     'say'("foo")
+.end
+
 .sub 'list'
      .param pmc args	:slurpy
 
@@ -45,6 +49,8 @@ list.pir -- simple implementation list functions
      unless $P3 goto it_end
 
      $P1 = pop $P3
+
+     print $P1
 
      $P0 = new 'cons'
      setattribute $P0, 'first', $P1

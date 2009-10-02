@@ -49,12 +49,19 @@ object.
     reason.'parsegrammar'($P0)
     $P0 = get_hll_namespace ['Reason';'Grammar';'Actions']
     reason.'parseactions'($P0)
-
+    reason.'addstage'('reader', 'after'=>'parse')
     ## Create a list for holding the stack of nested blocks
     $P0 = new 'ResizablePMCArray'
     set_hll_global ['Reason';'Grammar';'Actions'], '@?BLOCK', $P0
     $P0 = new 'ResizablePMCArray'
     set_hll_global ['Reason';'Grammar';'Actions'], '@?LIBRARY', $P0
+.end
+
+.sub 'reader' :method
+    .param pmc source
+    .param pmc adverbs         :slurpy :named
+
+
 .end
 
 =item main(args :slurpy)  :main

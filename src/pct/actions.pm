@@ -41,6 +41,11 @@ method TOP($/, $key) {
     }
 }
 
+method cons($/) {
+    ##my $items;
+    ##$items := list($/);
+    ##return $items
+}
 
 method statement($/, $key) {
     make $/{$key}.ast

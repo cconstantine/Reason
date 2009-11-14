@@ -24,7 +24,7 @@ token ws {
 rule statement {
     '('
     [
-	| <cons> {*}
+	| <cons> {*} #= cons
 ##        | <special> {*}                          #= special
 ##        | <simple> {*}                           #= simple
     ]
@@ -116,11 +116,11 @@ rule hllimport {
 
 rule simple {
     <cmd=term>
-    [<term> ]*
-    {*}
+    [<term> ]* {*}
 }
 
 rule cons {
+    <cmd=term>
     [<term> ]* {*}
 }
 rule tcall {

@@ -42,13 +42,32 @@ method TOP($/, $key) {
 }
 
 method cons($/) {
+    my $cmd := $<cmd>.ast;
+    my $past := PAST::Op.new(
+        :pasttype('call'),
+        :node( $/ )
+    );
+    if ~$cmd.WHAT() eq 'PAST::Var()' && $cmd.scope() eq 'package' {
+        $cmd := $cmd.name();
+        $past.name($cmd);
+    }
+    else {
+        $past.push($cmd);
+    }
+    for $<term> {
+        $past.push( $_.ast );
+    }
+    make $past;
+
     ##my $items;
     ##$items := list($/);
     ##return $items
 }
 
 method statement($/, $key) {
-    make $/{$key}.ast
+    say("begin statement");
+    make $/{$key}.ast;
+    say("end statement");
 }
 
 method special($/, $key) {

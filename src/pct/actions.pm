@@ -21,10 +21,11 @@ method TOP($/, $key) {
     our @?LIBRARY;
     my $past;
     if $key eq 'begin' {
+        say("begin");
         my @empty;
         $past:= PAST::Block.new(
             :blocktype('declaration'),
-            :node( $/ ),
+##            :node( $/ ),
             :hll('Reason'),
             :namespace(@empty),
         );
@@ -34,6 +35,7 @@ method TOP($/, $key) {
     else {
         $past := @?BLOCK.shift();
         for $<statement> {
+            say($_.ast[0]);
             $past.push( $_.ast );
         }
         make $past;
@@ -45,7 +47,7 @@ method cons($/) {
     my $cmd := $<cmd>.ast;
     my $past := PAST::Op.new(
         :pasttype('call'),
-        :node( $/ )
+ ##       :node( $/ )
     );
     if ~$cmd.WHAT() eq 'PAST::Var()' && $cmd.scope() eq 'package' {
         $cmd := $cmd.name();
@@ -65,9 +67,7 @@ method cons($/) {
 }
 
 method statement($/, $key) {
-    say("begin statement");
     make $/{$key}.ast;
-    say("end statement");
 }
 
 method special($/, $key) {
@@ -301,7 +301,7 @@ method integer($/) {
     make PAST::Val.new(
         :value( ~$/ ),
         :returns('Integer'),
-        :node($/),
+##        :node($/),
     );
 }
 

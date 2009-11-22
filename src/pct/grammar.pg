@@ -9,10 +9,9 @@ This is the grammar for Reason written as a sequence of Perl 6 rules.
 grammar Reason::Grammar is PCT::Grammar;
 
 rule TOP {
-    {*}                                          #= begin
-    <statement>*
+    <expr>
     [ $ || <panic: 'Syntax error'> ]
-    {*}                                          #= end
+    {*}
 }
 
 ##  this <ws> rule treats # as "comment to eol"
@@ -21,110 +20,8 @@ token ws {
     [ ';' \N* \n? | \s+ ]*
 }
 
-rule statement {
-    '('
-    [
-	| <cons> {*} #= cons
-##        | <special> {*}                          #= special
-##        | <simple> {*}                           #= simple
-    ]
-    ')'
-}
-
-token special {
-    | <if> {*}                                   #= if
-    | <define> {*}                               #= define
-    | <let> {*}                                  #= let
-    | <fn> {*}      	                         #= fn
-    | <library> {*}                              #= library
-    | <export> {*}                               #= export
-    | <import> {*}                               #= import
-    | <hllimport> {*}                            #= hllimport
-    | <tcall> {*} 				 #= tcall
-}
-
-rule if {
-    'if'
-    <cond=term>
-    <iftrue=term>
-    <iffalse=term>
-    {*}
-}
-
-rule define {
-    'define'
-    <var=symbol>
-    <val=term>
-    {*}
-}
-
-rule let {
-    'let' {*}					#= begin
-    '('
-    [
-        '('
-        <var=symbol> {*}  #= var
-        <val=term>   {*}  #= val
-        ')'
-    ]+
-    ')'
-    <statement>+
-    {*}                                          #= end
-}
-
-rule fn {
-    'fn'
-    '('
-    [
-        <var=symbol>
-    ]*
-    ')' {*}                                      #= begin
-    <statement>+
-    {*}                                          #= end
-}
-
-rule library {
-    'library'
-    '('
-    [<ns=ident> ]+
-    ')' {*}                                      #= begin
-    <statement>+
-    {*}                                          #= end
-}
-
-rule export {
-    'export'
-    <sym=ident>
-    {*}
-}
-
-rule import {
-    'import'
-    $<libs>=('('
-    [<ns=ident> ]+
-    ')' )+
-    {*}
-}
-
-rule hllimport {
-    'hllimport'
-    $<libs>=('('
-    <hll=ident> [<ns=ident> ]+
-    ')' )+
-    {*}
-}
-
-rule simple {
-    <cmd=term>
-    [<term> ]* {*}
-}
-
-rule cons {
-    <cmd=term>
-    [<term> ]* {*}
-}
-rule tcall {
-     '^' <cmd=term> [<term> ]* {*}
+rule expr {
+    '('	<term>* ')' {*}
 }
 
 rule value {
@@ -132,7 +29,7 @@ rule value {
     | <quote> {*}                                #= quote
 }
 
-token integer { \d+ {*} }
+token integer { \d+{*} }
 
 token quote {
     [ \' <string_literal: '\'' > \' | \" <string_literal: '"' > \" ]
@@ -143,7 +40,7 @@ token quote {
 token term {
     | <value> {*}                                #= value
     | <symbol> {*}                               #= symbol
-    | <statement> {*}                            #= statement
+    | <expr> {*}                            #= expr
 }
 
 token symbol {

@@ -35,7 +35,7 @@ object.
     exports = split ' ', 'PAST PCT PGE'
     parrotns.'export_to'(hllns, exports)
 
-
+    load_bytecode '../../runtime/parrot/library/dumper.pir'
 .end
 
 .include 'src/gen_grammar.pir'
@@ -63,12 +63,11 @@ object.
     .param pmc source
     .param pmc adverbs         :slurpy :named
 
-    'say'(source)
-    'say'(adverbs)
-    load_bytecode 'dumper.pbc'
-    load_bytecode 'PGE/Dumper.pbc'
+    
     _dumper(adverbs, "adverbs")
+    _dumper(source, "source")
 .end
+
 
 =item main(args :slurpy)  :main
 

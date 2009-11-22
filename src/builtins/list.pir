@@ -38,11 +38,20 @@ list.pir -- simple implementation list functions
      'say'("foo")
 .end
 
+.sub 'parse_list'
+     .param pmc args
+     $P0 = 'list'(args :flat)
+     .return ($P0)
+.end
+
 .sub 'list'
      .param pmc args	:slurpy
 
+     _dumper(args, "args")
+
      null $P1
      null $P2
+     print "("
      $P3 = iter args
      $P3 = .ITERATE_FROM_END
     it_loop:
@@ -50,7 +59,9 @@ list.pir -- simple implementation list functions
 
      $P1 = pop $P3
 
+     print " '"
      print $P1
+     print "' "
 
      $P0 = new 'cons'
      setattribute $P0, 'first', $P1
@@ -59,6 +70,7 @@ list.pir -- simple implementation list functions
      $P2 = $P0
      goto it_loop
     it_end:
+     print ")\n"
      .return ($P0)
 .end
 

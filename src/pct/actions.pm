@@ -39,19 +39,8 @@ method value($/, $key) {
 }
 
 method symbol($/) {
-    our @?BLOCK;
-    my $scope := 'package';
     my $name := ~$<symbol>;
-    for @?BLOCK {
-        if $_.symbol($name) && $scope eq 'package' {
-            $scope := $_.symbol($name)<scope>;
-        }
-    }
-    make PAST::Var.new(
-        :name( $name ),
-        :scope( $scope ),
-        :node( $/ ),
-    );
+    make $name;
 }
 
 

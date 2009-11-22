@@ -40,7 +40,6 @@ BUILTINS_PIR = \
   src/builtins/say.pir \
   src/builtins/math.pir \
   src/builtins/cmp.pir \
-  src/builtins/library.pir \
   src/builtins/control.pir \
   src/builtins/list.pir \
   src/builtins/seq.pir \

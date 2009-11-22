@@ -45,11 +45,7 @@ method symbol($/) {
 
 
 method integer($/) {
-    make PAST::Val.new(
-        :value( ~$/ ),
-        :returns('Integer'),
-##        :node($/),
-    );
+    make ~$/;
 }
 
 

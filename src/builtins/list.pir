@@ -41,6 +41,7 @@ list.pir -- simple implementation list functions
 .sub 'parse_list'
      .param pmc args
      $P0 = 'list'(args :flat)
+     _dumper($P0, "list")
      .return ($P0)
 .end
 

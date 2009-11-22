@@ -35,7 +35,7 @@ object.
     exports = split ' ', 'PAST PCT PGE'
     parrotns.'export_to'(hllns, exports)
 
-    load_bytecode '../../runtime/parrot/library/dumper.pir'
+    load_bytecode 'dumper.pir'
 .end
 
 .include 'src/gen_grammar.pir'

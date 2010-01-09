@@ -86,9 +86,8 @@ list.pir -- simple implementation list functions
 print:
      first = getattribute this, 'first'
      $S1 = first
-     $S0 = $S0 . " '" 
+     $S0 = $S0 . " "
      $S0 = $S0 . $S1
-     $S0 = $S0 . "'"
 
      this = getattribute this, 'rest'
      $I0 = isnull this

@@ -44,6 +44,7 @@ BUILTINS_PIR = \
   src/builtins/list.pir \
   src/builtins/seq.pir \
   src/builtins/string.pir \
+  src/builtins/compiler.pir
 
 # PMCS        = reason
 # PMC_SOURCES = $(PMC_DIR)/reason.pmc

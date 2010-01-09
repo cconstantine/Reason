@@ -13,6 +13,7 @@ list.pir -- simple implementation list functions
      $P0 = newclass 'cons'
      addattribute $P0, "first"
      addattribute $P0, "rest"
+     addattribute $P0, "node"
 .end
 
 
@@ -35,9 +36,10 @@ list.pir -- simple implementation list functions
 .end
 
 .sub 'parse_list'
+     .param pmc node
      .param pmc args
      $P0 = 'list'(args :flat)
-     'say'($P0)
+     setattribute $P0, 'node', node
 
      .return ($P0)
 .end

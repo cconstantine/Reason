@@ -17,18 +17,34 @@ value of the comment is passed as the second argument to the method.
 class Reason::Grammar::Actions;
 
 method TOP($/) {
+    my $past;
+ 
+    my @empty;
+    $past:= PAST::Block.new(
+       :blocktype('declaration'),
+       :node( $/ ),
+        :hll('reason'),
+        :namespace(@empty),
+     );
+
+     $past.push(compile_func(self, $/));
+     make $past;
+}
+
+method compile_func($/) {
     my $past := PAST::Op.new(
         :pasttype('call'),
         :node( $/ )
     );
    my $node := $/{'expr'}.ast;
+#   my $node := $ast;
    $past.name(first($node));
    $node := rest($node);
    while ($node) {
-     $past.push(first($node));
+     $past.push(to_past(self, first($node)));
      $node := rest($node);
    }
-   make $past;
+   return $past;
 }
 
 
@@ -41,7 +57,7 @@ method expr($/) {
         @item_array[$i] := $_.ast;
         $i := $i + 1;
     }
-    $items := parse_list(@item_array);
+    $items := parse_list($/, @item_array);
     make $items;
 }
 

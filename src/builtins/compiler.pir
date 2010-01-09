@@ -5,7 +5,7 @@
 .sub 'to_past' :multi(_, _)
      .param pmc arg
      .param pmc ast
-     print "generic\n"
+
      .return (ast)
 .end
 
@@ -15,8 +15,7 @@
 
      .local pmc node
      node = getattribute ast, 'node'
-     'say'(node)
-#     .return ("")
-      $P1 = arg.'compile_func'(node)
+
+     $P1 = arg.'compile_func'(node, ast)
      .return ($P1)
 .end

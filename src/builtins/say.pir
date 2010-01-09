@@ -12,8 +12,11 @@ say.pir -- simple implementation of a say function
     .param pmc args            :slurpy
     .local pmc it
     it = iter args
+    goto top
   it_loop:
     unless it goto it_end
+    print " "
+  top:
     $P0 = shift it
     print $P0
     goto it_loop

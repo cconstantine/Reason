@@ -27,17 +27,15 @@ method TOP($/) {
         :namespace(@empty),
      );
 
-     $past.push(compile_func(self, $/));
+     $past.push(to_past(self, $<expr>.ast));
      make $past;
 }
 
-method compile_func($/) {
+method compile_func($/, $node) {
     my $past := PAST::Op.new(
         :pasttype('call'),
         :node( $/ )
     );
-   my $node := $/{'expr'}.ast;
-#   my $node := $ast;
    $past.name(first($node));
    $node := rest($node);
    while ($node) {

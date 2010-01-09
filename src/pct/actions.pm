@@ -17,8 +17,20 @@ value of the comment is passed as the second argument to the method.
 class Reason::Grammar::Actions;
 
 method TOP($/) {
-    make $/{'expr'}.ast;
+    my $past := PAST::Op.new(
+        :pasttype('call'),
+        :node( $/ )
+    );
+   my $node := $/{'expr'}.ast;
+   $past.name(first($node));
+   $node := rest($node);
+   while ($node) {
+     $past.push(first($node));
+     $node := rest($node);
+   }
+   make $past;
 }
+
 
 method expr($/) {
     my $items;

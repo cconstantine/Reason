@@ -66,10 +66,6 @@ method term($/, $key) {
     make $/{$key}.ast;
 }
 
-method safoo() {
-    say('foo');
-}
-
 method value($/, $key) {
     make $/{$key}.ast;
 }

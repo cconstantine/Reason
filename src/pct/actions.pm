@@ -22,7 +22,14 @@ method TOP($/) {
 
 method expr($/) {
     my $items;
-    $items := parse_list($<term>);
+    my @item_array;
+    my $i;
+    $i := 0;
+    for $<term> {
+        @item_array[$i] := $_.ast;
+        $i := $i + 1;
+    }
+    $items := parse_list(@item_array);
     make $items;
 }
 
@@ -33,6 +40,9 @@ method term($/, $key) {
     make $/{$key}.ast;
 }
 
+method safoo() {
+    say('foo');
+}
 
 method value($/, $key) {
     make $/{$key}.ast;
@@ -45,7 +55,11 @@ method symbol($/) {
 
 
 method integer($/) {
-    make ~$/;
+    make PAST::Val.new(
+        :value( ~$/ ),
+        :returns('Integer'),
+        :node($/),
+     );
 }
 
 

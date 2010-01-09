@@ -34,35 +34,26 @@ list.pir -- simple implementation list functions
      .return ($P0)
 .end
 
-.sub 'safoo'
-     'say'("foo")
-.end
-
 .sub 'parse_list'
      .param pmc args
      $P0 = 'list'(args :flat)
-     _dumper($P0, "list")
+     'say'($P0)
+
      .return ($P0)
 .end
 
 .sub 'list'
      .param pmc args	:slurpy
 
-     _dumper(args, "args")
-
      null $P1
      null $P2
-     print "("
+
      $P3 = iter args
      $P3 = .ITERATE_FROM_END
     it_loop:
      unless $P3 goto it_end
 
      $P1 = pop $P3
-
-     print " '"
-     print $P1
-     print "' "
 
      $P0 = new 'cons'
      setattribute $P0, 'first', $P1
@@ -71,7 +62,6 @@ list.pir -- simple implementation list functions
      $P2 = $P0
      goto it_loop
     it_end:
-     print ")\n"
      .return ($P0)
 .end
 
@@ -79,6 +69,31 @@ list.pir -- simple implementation list functions
 
 .sub get_bool :vtable
      .return (1)
+.end
+
+.sub get_string :vtable
+     .local pmc first
+     .local pmc rest
+     .local pmc this
+
+     this = self
+     null $P0
+
+     $S0 = "("
+     goto print
+print:
+     first = getattribute this, 'first'
+     $S1 = first
+     $S0 = $S0 . " '" 
+     $S0 = $S0 . $S1
+     $S0 = $S0 . "'"
+
+     this = getattribute this, 'rest'
+     $I0 = isnull this
+     unless $I0 goto print
+
+     $S0 = $S0 . " )"
+     .return ($S0)
 .end
 
 #.sub 'map'

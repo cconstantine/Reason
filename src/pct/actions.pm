@@ -36,8 +36,8 @@ method compile_func($/, $node) {
         :pasttype('call'),
         :node( $/ )
     );
-   $past.name(first($node));
-   $node := rest($node);
+#   $past.name(first($node));
+#   $node := rest($node);
    while ($node) {
      $past.push(to_past(self, first($node)));
      $node := rest($node);
@@ -71,8 +71,21 @@ method value($/, $key) {
 }
 
 method symbol($/) {
+   our @?BLOCK;
+    my $scope := 'package';
     my $name := ~$<symbol>;
-    make $name;
+    for @?BLOCK {
+        if $_.symbol($name) && $scope eq 'package' {
+            $scope := $_.symbol($name)<scope>;
+        }
+    }
+    make PAST::Var.new(
+        :name( $name ),
+        :scope( $scope ),
+        :node( $/ ),
+    );
+#    my $name := ~$<symbol>;
+#    make $name;
 }
 
 

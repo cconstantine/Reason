@@ -40,7 +40,8 @@ token quote {
 token term {
     | <value> {*}                                #= value
     | <symbol> {*}                               #= symbol
-    | <expr> {*}                            #= expr
+    | <expr> {*}                            	 #= expr
+    | <quote> {*}				 #= quote
 }
 
 token symbol {

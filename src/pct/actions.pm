@@ -28,6 +28,10 @@ method TOP($/) {
      );
 
      $past.push(to_past(self, $<expr>.ast));
+## To Finish compiling a PAST and execute it
+#   my $compiler := Q:PIR { %r = compreg 'PAST' };
+#   my $code := $compiler.compile($past);
+#   $code[0]();
      make $past;
 }
 
@@ -42,6 +46,7 @@ method compile_func($/, $node) {
      $past.push(to_past(self, first($node)));
      $node := rest($node);
    }
+
    return $past;
 }
 

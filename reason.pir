@@ -70,6 +70,7 @@ to the Reason compiler.
 
     $P0 = compreg 'reason'
     $P1 = $P0.'command_line'(args)
+    'say'($P1)
 .end
 
 .sub 'load_library' :method

@@ -16,6 +16,6 @@
      .local pmc node
      node = getattribute ast, 'node'
 
-     $P1 = arg.'compile_func'(node, ast)
+     $P1 = arg.'compile_node'(node, ast)
      .return ($P1)
 .end

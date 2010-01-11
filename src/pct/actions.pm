@@ -17,8 +17,10 @@ value of the comment is passed as the second argument to the method.
 class Reason::Grammar::Actions;
 
 method TOP($/) {
+    our @?BLOCK;
+    our @?LIBRARY;
     my $past;
- 
+
     my @empty;
     $past:= PAST::Block.new(
        :blocktype('declaration'),
@@ -32,22 +34,112 @@ method TOP($/) {
 #   my $compiler := Q:PIR { %r = compreg 'PAST' };
 #   my $code := $compiler.compile($past);
 #   $code[0]();
+    _dumper($past, "AST");
      make $past;
 }
 
-method compile_func($/, $node) {
+method compile_fn($/, $node) {
+    my $args := first($node); $node := rest($node);
+    my $impl := first($node); $node := rest($node);
+
+    my $block := PAST::Block.new( :blocktype('declaration'), :node($/) );
+    my $init := PAST::Stmts.new();
+    while ($args) {
+        my $var := first($args);
+        $var.scope('parameter');
+        $var.isdecl(1);
+        $block.symbol($var.name(), :scope('lexical'));
+        $init.push($var);
+        $args := rest($args);
+    }
+    $block.unshift($init);
+    my $stmts := PAST::Stmts.new();
+
+    while ($impl) {
+        $stmts.push(to_past(self, first($impl)));
+        $impl := rest($impl);
+    }
+
+    $block.push($stmts);
+    return $block;
+}
+
+method compile_call($/, $node) {
     my $past := PAST::Op.new(
         :pasttype('call'),
         :node( $/ )
     );
-#   $past.name(first($node));
-#   $node := rest($node);
+
    while ($node) {
      $past.push(to_past(self, first($node)));
      $node := rest($node);
    }
 
    return $past;
+}
+
+method decorate_symbol($block, $name, $scope) {
+     if $block.symbol($name) {
+         $block.symbol($name)<scope> := $scope;
+     }
+}
+
+method compile_let($/, $node) {
+    say("Node: ");say($node);
+
+    # Strip off leading 'let'
+    $node := rest($node);
+    my $vars := first($node); $node := rest($node);
+
+    my $block;
+
+    say("Vars: ");say($vars);
+    say("body: ");say($node);
+    $block := PAST::Block.new( :blocktype('immediate'), :node($/) );
+    my $init := PAST::Stmts.new();
+    while ($vars) {
+        my $var := first($vars);
+        $vars := rest($vars);
+        my $val  := to_past(self, first($vars));
+        $vars := rest($vars);
+
+        say("Var: ");say($var);
+        say("Val: ");say($val);
+
+        $var.scope('lexical');
+        $var.isdecl(1);
+        $block.symbol($var.name(), :scope('lexical'));
+        $init.push( PAST::Op.new( $var, $val, :pasttype('bind')));
+    }
+    $block.unshift($init);
+
+    my $stmts := PAST::Stmts.new();
+    while ($node) {
+        $stmts.push( to_past(self, first($node)) );
+        $node := rest($node);
+    }
+
+    $block.push($stmts);
+    return $block;
+}
+
+method compile_node($/, $node) {
+    my $first := first($node);
+    say("Compiling: ");say($node);
+
+    if ($first.name eq "fn")
+    {say("Compiling to fn");
+	compile_fn(self, $/, $node);
+    }
+    elsif ($first.name eq "let")
+    {say("Compiling to let");
+        compile_let(self, $/, $node);
+    }
+    else
+    {say("Compiling to call");
+       compile_call(self, $/, $node);
+    }
+
 }
 
 
@@ -79,11 +171,11 @@ method symbol($/) {
    our @?BLOCK;
     my $scope := 'package';
     my $name := ~$<symbol>;
-    for @?BLOCK {
-        if $_.symbol($name) && $scope eq 'package' {
-            $scope := $_.symbol($name)<scope>;
-        }
-    }
+#    for @?BLOCK {
+#       if $_.symbol($name) && $scope eq 'package' {
+#            $scope := $_.symbol($name)<scope>;
+#        }
+#    }
     make PAST::Var.new(
         :name( $name ),
         :scope( $scope ),

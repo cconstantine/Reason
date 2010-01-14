@@ -78,11 +78,16 @@ method compile_call($/, $node) {
    return $past;
 }
 
-method decorate_symbol($block, $name, $scope) {
-     if $block.symbol($name) {
-         $block.symbol($name)<scope> := $scope;
-     }
+method decorate_node($node, $name, $scope) {
+    for $node.iterator {
+        decorate(self, $_, $name, $scope);
+    }
 }
+
+method decorate_symbol($var, $scope) {
+    $var.scope($scope);
+}
+
 
 method compile_let($/, $node) {
     say("Node: ");say($node);
@@ -96,6 +101,14 @@ method compile_let($/, $node) {
     say("Vars: ");say($vars);
     say("body: ");say($node);
     $block := PAST::Block.new( :blocktype('immediate'), :node($/) );
+
+    my $stmts := PAST::Stmts.new();
+    while ($node) {
+        $stmts.push( to_past(self, first($node)) );
+        $node := rest($node);
+    }
+    $block.push($stmts);
+
     my $init := PAST::Stmts.new();
     while ($vars) {
         my $var := first($vars);
@@ -105,7 +118,7 @@ method compile_let($/, $node) {
 
         say("Var: ");say($var);
         say("Val: ");say($val);
-
+        decorate(self, $stmts, $var.name(), 'lexical');
         $var.scope('lexical');
         $var.isdecl(1);
         $block.symbol($var.name(), :scope('lexical'));
@@ -113,13 +126,6 @@ method compile_let($/, $node) {
     }
     $block.unshift($init);
 
-    my $stmts := PAST::Stmts.new();
-    while ($node) {
-        $stmts.push( to_past(self, first($node)) );
-        $node := rest($node);
-    }
-
-    $block.push($stmts);
     return $block;
 }
 
@@ -176,9 +182,17 @@ method symbol($/) {
 #            $scope := $_.symbol($name)<scope>;
 #        }
 #    }
+#    if ($name eq "say") {
+#        make PAST::Var.new(
+#            :name( $name ),
+#            :scope( 'package' ),
+#            :node( $/ ),
+#        );
+#    }
+#    else {
     make PAST::Var.new(
         :name( $name ),
-        :scope( $scope ),
+        :scope( 'package' ),
         :node( $/ ),
     );
 #    my $name := ~$<symbol>;

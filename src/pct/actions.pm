@@ -63,7 +63,7 @@ say("imple");
     my $stmts := PAST::Stmts.new();
 
     while ($impl) {
-        $stmts.push(to_past(self, $impl));
+        $stmts.push(to_past(self, first($impl)));
         $impl := rest($impl);
     }
 

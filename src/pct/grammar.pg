@@ -9,19 +9,20 @@ This is the grammar for Reason written as a sequence of Perl 6 rules.
 grammar Reason::Grammar is PCT::Grammar;
 
 rule TOP {
-    <expr>
+    <term>
     [ $ || <panic: 'Syntax error'> ]
     {*}
 }
 
-##  this <ws> rule treats # as "comment to eol"
-token ws {
-    <!ww>
-    [ ';' \N* \n? | \s+ ]*
-}
-
 rule expr {
     '('	<term>* ')' {*}
+}
+
+##  terms
+rule term {
+    | <value> {*}                                #= value
+    | <symbol> {*}                               #= symbol
+    | <expr> {*}                            	 #= expr
 }
 
 rule value {
@@ -36,18 +37,6 @@ token quote {
     {*}
 }
 
-##  terms
-token term {
-    | <value> {*}                                #= value
-    | <symbol> {*}                               #= symbol
-    | <expr> {*}                            	 #= expr
-    | <quote> {*}				 #= quote
-}
-
 token symbol {
-    <symbol=ident> {*}
-}
-
-token ident {
-    [<!before <[()]>> \S]+
+      \w+ {*}
 }

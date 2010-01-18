@@ -25,10 +25,10 @@
      .param pmc node
      .param pmc name
      .param pmc scope
-     'say'("Decorating default")
-     _dumper(node, "Node")
-     $S0 = node['type']
-     print $S0
+#     'say'("Decorating default")
+#     _dumper(node, "Node")
+#     $S0 = node['type']
+#     print $S0
      arg.'decorate_node'(node, name, scope)
      .return()
 .end
@@ -38,7 +38,8 @@
      .param pmc node
      .param pmc name
      .param pmc scope
-     'say'("Decorating var\n")
-     arg.'decorate_symbol'(node, scope)
+#     'say'("Decorating var\n")
+#     _dumper(node, "Node")
+     arg.'decorate_symbol'(node, name, scope)
      .return ()
 .end

@@ -20,16 +20,15 @@ method TOP($/) {
     our @?BLOCK;
     our @?LIBRARY;
     my $past;
-
+   _dumper($/, "Starting parsing");
     my @empty;
     $past:= PAST::Block.new(
        :blocktype('declaration'),
        :node( $/ ),
         :hll('reason'),
         :namespace(@empty),
-     );
-
-     $past.push(to_past(self, $<expr>.ast));
+    );
+    $past.push(to_past(self, $<term>.ast));
 ## To Finish compiling a PAST and execute it
 #   my $compiler := Q:PIR { %r = compreg 'PAST' };
 #   my $code := $compiler.compile($past);
@@ -39,9 +38,17 @@ method TOP($/) {
 }
 
 method compile_fn($/, $node) {
-    my $args := first($node); $node := rest($node);
-    my $impl := first($node); $node := rest($node);
 
+    # Strip off leading 'fn'
+    $node := rest($node);
+
+    my $args := first($node); $node := rest($node);
+    my $impl := $node;
+say("Compile_fn");
+say("args");
+    say($args);
+say("imple");
+    say($impl);
     my $block := PAST::Block.new( :blocktype('declaration'), :node($/) );
     my $init := PAST::Stmts.new();
     while ($args) {
@@ -56,7 +63,7 @@ method compile_fn($/, $node) {
     my $stmts := PAST::Stmts.new();
 
     while ($impl) {
-        $stmts.push(to_past(self, first($impl)));
+        $stmts.push(to_past(self, $impl));
         $impl := rest($impl);
     }
 
@@ -84,13 +91,14 @@ method decorate_node($node, $name, $scope) {
     }
 }
 
-method decorate_symbol($var, $scope) {
-    $var.scope($scope);
+method decorate_symbol($var, $name, $scope) {
+    if ($var.name() eq $name) {
+      $var.scope($scope);
+    }
 }
 
-
 method compile_let($/, $node) {
-    say("Node: ");say($node);
+    say("Compiling let: ");say($node);
 
     # Strip off leading 'let'
     $node := rest($node);
@@ -100,13 +108,13 @@ method compile_let($/, $node) {
 
     say("Vars: ");say($vars);
     say("body: ");say($node);
-    $block := PAST::Block.new( :blocktype('immediate'), :node($/) );
 
     my $stmts := PAST::Stmts.new();
     while ($node) {
         $stmts.push( to_past(self, first($node)) );
         $node := rest($node);
     }
+    $block := PAST::Block.new( :blocktype('immediate'), :node($/) );
     $block.push($stmts);
 
     my $init := PAST::Stmts.new();
@@ -116,8 +124,8 @@ method compile_let($/, $node) {
         my $val  := to_past(self, first($vars));
         $vars := rest($vars);
 
-        say("Var: ");say($var);
-        say("Val: ");say($val);
+#        say("Var: ");say($var);
+#        say("Val: ");say($val);
         decorate(self, $stmts, $var.name(), 'lexical');
         $var.scope('lexical');
         $var.isdecl(1);
@@ -174,29 +182,13 @@ method value($/, $key) {
 }
 
 method symbol($/) {
-   our @?BLOCK;
-    my $scope := 'package';
-    my $name := ~$<symbol>;
-#    for @?BLOCK {
-#       if $_.symbol($name) && $scope eq 'package' {
-#            $scope := $_.symbol($name)<scope>;
-#        }
-#    }
-#    if ($name eq "say") {
-#        make PAST::Var.new(
-#            :name( $name ),
-#            :scope( 'package' ),
-#            :node( $/ ),
-#        );
-#    }
-#    else {
+    my $name := ~$/;
+
     make PAST::Var.new(
         :name( $name ),
         :scope( 'package' ),
         :node( $/ ),
     );
-#    my $name := ~$<symbol>;
-#    make $name;
 }
 
 

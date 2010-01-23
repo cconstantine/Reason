@@ -28,6 +28,7 @@ method TOP($/) {
        :hll('reason'),
        :namespace(@empty),
     );
+    @?LIBRARY.unshift($past);
 
     for $<term> {
       $past.push(to_past(self, $_.ast));
@@ -155,6 +156,26 @@ method compile_if($/, $node) {
     );
 }
 
+method compile_def($/, $node) {
+    our @?LIBRARY;
+
+    # Strip off leading 'def'
+    $node := rest($node);
+
+    my $var := to_past(self, first($node));$node := rest($node);
+    my $val := to_past(self, first($node));
+
+    my $lib := @?LIBRARY[0];
+    my @ns := $lib.namespace();
+
+    $var.scope('package');
+    $var.namespace(@ns);
+    #$var.isdecl(1);
+
+    $lib.symbol( $var.name, :scope('package') );
+    return PAST::Op.new( $var, $val, :pasttype('bind'), :node($/) );
+}
+
 method compile_node($/, $node) {
     my $first := first($node);
 #say("Compiling: ");say($node);
@@ -170,6 +191,10 @@ method compile_node($/, $node) {
     elsif ($first.name eq "if")
     {
         compile_if(self, $/, $node);
+    }
+    elsif ($first.name eq "def")
+    {
+        compile_def(self, $/, $node);
     }
     else
     {

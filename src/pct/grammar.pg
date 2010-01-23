@@ -9,7 +9,7 @@ This is the grammar for Reason written as a sequence of Perl 6 rules.
 grammar Reason::Grammar is PCT::Grammar;
 
 rule TOP {
-    <term>
+    <term>*
     [ $ || <panic: 'Syntax error'> ]
     {*}
 }
@@ -38,5 +38,5 @@ token quote {
 }
 
 token symbol {
-      [_|\w|\+|\-|\*|\/|\.|\<|\>|\:|\^|\&|\%|\$|\#|\@|\!|\~]+ {*}
+      [_|\w|\+|\-|\*|\/|\.|\<|\>|\:|\^|\&|\%|\$|\#|\@|\!|\~|\=]+ {*}
 }

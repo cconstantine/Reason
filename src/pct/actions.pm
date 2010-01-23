@@ -25,16 +25,18 @@ method TOP($/) {
     $past:= PAST::Block.new(
        :blocktype('declaration'),
        :node( $/ ),
-        :hll('reason'),
-        :namespace(@empty),
+       :hll('reason'),
+       :namespace(@empty),
     );
-    $past.push(to_past(self, $<term>.ast));
+    for $<term> {
+      $past.push(to_past(self, $_.ast));
+    }
 ## To Finish compiling a PAST and execute it
 #   my $compiler := Q:PIR { %r = compreg 'PAST' };
 #   my $code := $compiler.compile($past);
 #   $code[0]();
-    _dumper($past, "AST");
-     make $past;
+#    _dumper($past, "AST");
+    make $past;
 }
 
 method compile_fn($/, $node) {
@@ -44,11 +46,11 @@ method compile_fn($/, $node) {
 
     my $args := first($node); $node := rest($node);
     my $impl := $node;
-say("Compile_fn");
-say("args");
-    say($args);
-say("imple");
-    say($impl);
+#say("Compile_fn");
+#say("args");
+#    say($args);
+#say("impl");
+#    say($impl);
     my $block := PAST::Block.new( :blocktype('declaration'), :node($/) );
     my $init := PAST::Stmts.new();
     while ($args) {
@@ -98,7 +100,7 @@ method decorate_symbol($var, $name, $scope) {
 }
 
 method compile_let($/, $node) {
-    say("Compiling let: ");say($node);
+#say("Compiling let: ");say($node);
 
     # Strip off leading 'let'
     $node := rest($node);
@@ -106,8 +108,8 @@ method compile_let($/, $node) {
 
     my $block;
 
-    say("Vars: ");say($vars);
-    say("body: ");say($node);
+#say("Vars: ");say($vars);
+#say("body: ");say($node);
 
     my $stmts := PAST::Stmts.new();
     while ($node) {
@@ -139,18 +141,21 @@ method compile_let($/, $node) {
 
 method compile_node($/, $node) {
     my $first := first($node);
-    say("Compiling: ");say($node);
+#say("Compiling: ");say($node);
 
     if ($first.name eq "fn")
-    {say("Compiling to fn");
+    {
+#say("Compiling to fn");
 	compile_fn(self, $/, $node);
     }
     elsif ($first.name eq "let")
-    {say("Compiling to let");
+    {
+#say("Compiling to let");
         compile_let(self, $/, $node);
     }
     else
-    {say("Compiling to call");
+    {
+#say("Compiling to call");
        compile_call(self, $/, $node);
     }
 

@@ -20,7 +20,7 @@ method TOP($/) {
     our @?BLOCK;
     our @?LIBRARY;
     my $past;
-   _dumper($/, "Starting parsing");
+#   _dumper($/, "Starting parsing");
     my @empty;
     $past:= PAST::Block.new(
        :blocktype('declaration'),
@@ -52,24 +52,26 @@ method compile_fn($/, $node) {
 #say("impl");
 #    say($impl);
     my $block := PAST::Block.new( :blocktype('declaration'), :node($/) );
+
+    my $stmts := PAST::Stmts.new();
+    while ($impl) {
+        $stmts.push(to_past(self, first($impl)));
+        $impl := rest($impl);
+    }
+    $block.push($stmts);
+
     my $init := PAST::Stmts.new();
     while ($args) {
         my $var := first($args);
         $var.scope('parameter');
         $var.isdecl(1);
+        decorate(self, $stmts, $var.name(), 'lexical');
         $block.symbol($var.name(), :scope('lexical'));
         $init.push($var);
         $args := rest($args);
     }
     $block.unshift($init);
-    my $stmts := PAST::Stmts.new();
 
-    while ($impl) {
-        $stmts.push(to_past(self, first($impl)));
-        $impl := rest($impl);
-    }
-
-    $block.push($stmts);
     return $block;
 }
 
@@ -139,6 +141,30 @@ method compile_let($/, $node) {
     return $block;
 }
 
+method compile_if($/, $node) {
+    # Strip off leading 'if'
+    $node := rest($node);
+
+    my $cond_node := to_past(self, first($node));$node := rest($node);
+    my $then_node := NULL;
+    my $else_node := NULL;
+
+    if ($node) {
+     $then_node := to_past(self, first($node));$node := rest($node);
+    }
+    if ($node) {
+     $else_node := to_past(self, first($node));$node := rest($node);
+    }
+
+    return PAST::Op.new(
+        $cond_node,
+        $then_node,
+        $else_node,
+        :pasttype('if'),
+        :node($/),
+    );
+}
+
 method compile_node($/, $node) {
     my $first := first($node);
 #say("Compiling: ");say($node);
@@ -152,6 +178,11 @@ method compile_node($/, $node) {
     {
 #say("Compiling to let");
         compile_let(self, $/, $node);
+    }
+    elsif ($first.name eq "if")
+    {
+#say("Compiling to if");
+        compile_if(self, $/, $node);
     }
     else
     {

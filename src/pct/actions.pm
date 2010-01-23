@@ -28,9 +28,11 @@ method TOP($/) {
        :hll('reason'),
        :namespace(@empty),
     );
+
     for $<term> {
       $past.push(to_past(self, $_.ast));
     }
+
 ## To Finish compiling a PAST and execute it
 #   my $compiler := Q:PIR { %r = compreg 'PAST' };
 #   my $code := $compiler.compile($past);
@@ -40,17 +42,12 @@ method TOP($/) {
 }
 
 method compile_fn($/, $node) {
-
     # Strip off leading 'fn'
     $node := rest($node);
 
     my $args := first($node); $node := rest($node);
     my $impl := $node;
-#say("Compile_fn");
-#say("args");
-#    say($args);
-#say("impl");
-#    say($impl);
+
     my $block := PAST::Block.new( :blocktype('declaration'), :node($/) );
 
     my $stmts := PAST::Stmts.new();
@@ -108,17 +105,12 @@ method compile_let($/, $node) {
     $node := rest($node);
     my $vars := first($node); $node := rest($node);
 
-    my $block;
-
-#say("Vars: ");say($vars);
-#say("body: ");say($node);
-
+    my $block := PAST::Block.new( :blocktype('immediate'), :node($/) );
     my $stmts := PAST::Stmts.new();
     while ($node) {
         $stmts.push( to_past(self, first($node)) );
         $node := rest($node);
     }
-    $block := PAST::Block.new( :blocktype('immediate'), :node($/) );
     $block.push($stmts);
 
     my $init := PAST::Stmts.new();
@@ -128,8 +120,6 @@ method compile_let($/, $node) {
         my $val  := to_past(self, first($vars));
         $vars := rest($vars);
 
-#        say("Var: ");say($var);
-#        say("Val: ");say($val);
         decorate(self, $stmts, $var.name(), 'lexical');
         $var.scope('lexical');
         $var.isdecl(1);
@@ -171,22 +161,18 @@ method compile_node($/, $node) {
 
     if ($first.name eq "fn")
     {
-#say("Compiling to fn");
 	compile_fn(self, $/, $node);
     }
     elsif ($first.name eq "let")
     {
-#say("Compiling to let");
         compile_let(self, $/, $node);
     }
     elsif ($first.name eq "if")
     {
-#say("Compiling to if");
         compile_if(self, $/, $node);
     }
     else
     {
-#say("Compiling to call");
        compile_call(self, $/, $node);
     }
 

@@ -196,13 +196,28 @@ method compile_defn($/, $node) {
 }
 
 method compile_quote($/, $node) {
+    our @?QUOTES;
     # Strip off leading 'quote'
     $node := rest($node);
 #    return first($node);
-    return PAST::Val.new(
-        :value( first($node) ),
-        :node($/),
-     );
+    my $var := PAST::Var.new(
+        :scope( 'register' ),
+        :node( $/ )
+    );
+    @?QUOTES.push(first($node));
+    return PAST::Var.new(:scope('keyed'),
+                  PAST::Var.new(:scope('package'),
+                                :name('@?QUOTES')),
+                  PAST::Val.new(:value(size(@?QUOTES) - 1)));
+
+#    my $stmts := PAST::Stmts.new();
+#    $stmts.push( first($node) );
+#
+#    return $stmts;
+#    return PAST::Val.new(
+#        :value( first($node) ),
+#        :node($/),
+#     );
 }
 
 method compile_defmacro($/, $node) {

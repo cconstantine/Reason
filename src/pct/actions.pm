@@ -33,24 +33,26 @@ method TOP($/) {
     for $<term> {
       $past.push(to_past(self, $_.ast));
     }
-
-## To Finish compiling a PAST and execute it
-#   my $compiler := Q:PIR { %r = compreg 'PAST' };
-#   my $code := $compiler.compile($past);
-#   $code[0]();
 #    _dumper($past, "AST");
     make $past;
 }
 
-method compile_fn($/, $node) {
+method compile_fn($/, $node, $name) {
     # Strip off leading 'fn'
     $node := rest($node);
 
     my $args := first($node); $node := rest($node);
     my $impl := $node;
-
-    my $block := PAST::Block.new( :blocktype('declaration'), :node($/) );
-
+ 
+    my $block;
+    if ($name) {
+        $block := PAST::Block.new( :blocktype('declaration'),
+                                   :name($name),
+                                   :node($/) );
+    } else {
+        $block := PAST::Block.new( :blocktype('declaration'),
+                                   :node($/) );
+    }
     my $stmts := PAST::Stmts.new();
     while ($impl) {
         $stmts.push(to_past(self, first($impl)));
@@ -176,31 +178,55 @@ method compile_def($/, $node) {
     return PAST::Op.new( $var, $val, :pasttype('bind'), :node($/) );
 }
 
+method compile_defn($/, $node) {
+    # Strip off leading 'defn'
+    $node := rest($node);
+    my $name := first($node).name();
+
+    return compile_fn(self, $/, $node, $name);
+}
+
+method compile_defmacro($/, $node) {
+    my $macro := compile_defn(self, $/, $node);
+
+## To Finish compiling a PAST and execute it
+#    my $compiler := Q:PIR { %r = compreg 'PAST' };
+#    my $code := $compiler.compile($macro);
+#    $code[0]();
+
+    return $macro;
+}
+
 method compile_node($/, $node) {
     my $first := first($node);
 #say("Compiling: ");say($node);
 
     if ($first.name eq "fn")
     {
-	compile_fn(self, $/, $node);
+	return compile_fn(self, $/, $node, NULL);
     }
     elsif ($first.name eq "let")
     {
-        compile_let(self, $/, $node);
+        return compile_let(self, $/, $node);
     }
     elsif ($first.name eq "if")
     {
-        compile_if(self, $/, $node);
+        return compile_if(self, $/, $node);
     }
     elsif ($first.name eq "def")
     {
-        compile_def(self, $/, $node);
+        return compile_def(self, $/, $node);
     }
-    else
+    elsif ($first.name eq "defn")
     {
-       compile_call(self, $/, $node);
+        return compile_defn(self, $/, $node);
+    }
+    elsif ($first.name eq "defmacro")
+    {
+       return compile_defmacro(self, $/, $node);
     }
 
+    return compile_call(self, $/, $node);
 }
 
 

@@ -43,3 +43,11 @@
      arg.'decorate_symbol'(node, name, scope)
      .return ()
 .end
+
+.sub 'exec_macro'
+     .param pmc macro
+     .param pmc args
+
+     $P0 = macro(args :flat)
+     .return ($P0)
+.end

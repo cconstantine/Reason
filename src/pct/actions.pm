@@ -31,9 +31,12 @@ method TOP($/) {
     @?LIBRARY.unshift($past);
 
     for $<term> {
-      $past.push(to_past(self, $_.ast));
+      my $n := to_past(self, $_.ast);
+      if ($n) {
+          $past.push(to_past(self, $_.ast));
+      }
     }
-#    _dumper($past, "AST");
+    _dumper($past, "AST");
 ## To Finish compiling a PAST and execute it
 #    my $compiler := Q:PIR { %r = compreg 'PAST' };
 #    _dumper($compiler, "compiler");
@@ -192,7 +195,18 @@ method compile_defn($/, $node) {
     return compile_fn(self, $/, $node, $name, 'declaration');
 }
 
+method compile_quote($/, $node) {
+    # Strip off leading 'quote'
+    $node := rest($node);
+#    return first($node);
+    return PAST::Val.new(
+        :value( first($node) ),
+        :node($/),
+     );
+}
+
 method compile_defmacro($/, $node) {
+    our %?MACROS;
     # Strip off leading 'defn'
     $node := rest($node);
     my $name := first($node).name();
@@ -204,15 +218,16 @@ method compile_defmacro($/, $node) {
     ## Finish compiling a PAST
     my $compiler := Q:PIR { %r = compreg 'PAST' };
     my $code := $compiler.compile($macro);#, :target('PIR'));
+    %?MACROS{$name} := $code;
 
-    $code(1);
-
-    return $macro;
+    return NULL;
 }
 
 method compile_node($/, $node) {
+    our %?MACROS;
     my $first := first($node);
-#say("Compiling: ");say($node);
+say("Compiling: ");say($node);
+say("first: ");say($first);
 
     if ($first.name eq "fn")
     {
@@ -234,11 +249,27 @@ method compile_node($/, $node) {
     {
         return compile_defn(self, $/, $node);
     }
+    elsif ($first.name eq "quote")
+    {
+       return compile_quote(self, $/, $node);
+    }
     elsif ($first.name eq "defmacro")
     {
        return compile_defmacro(self, $/, $node);
     }
-
+    _dumper($first, "first");
+    my $mac := %?MACROS{$first.name};
+    if ($mac) {
+        $node := rest($node);
+        my @args;
+        my $i := 0;
+        while ($node) {
+           @args[$i] := first($node);
+            $node := rest($node);
+        }
+        say(exec_macro($mac, @args));
+        return to_past(self, exec_macro($mac, @args));
+    }
     return compile_call(self, $/, $node);
 }
 

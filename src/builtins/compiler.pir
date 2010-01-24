@@ -45,9 +45,11 @@
 .end
 
 .sub 'exec_macro'
+     .param pmc node
      .param pmc macro
      .param pmc args
 
      $P0 = macro(args :flat)
+     setattribute $P0, 'node', node
      .return ($P0)
 .end

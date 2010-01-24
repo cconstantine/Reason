@@ -36,7 +36,7 @@ method TOP($/) {
           $past.push(to_past(self, $_.ast));
       }
     }
-    _dumper($past, "AST");
+#    _dumper($past, "AST");
 ## To Finish compiling a PAST and execute it
 #    my $compiler := Q:PIR { %r = compreg 'PAST' };
 #    _dumper($compiler, "compiler");
@@ -229,7 +229,7 @@ method compile_defmacro($/, $node) {
 
     my $macro := compile_fn(self, $/, $node, $name, 'declaration');
     $macro.hll('reason');
-    _dumper($macro, "macro");
+#_dumper($macro, "macro");
 
     ## Finish compiling a PAST
     my $compiler := Q:PIR { %r = compreg 'PAST' };
@@ -242,8 +242,8 @@ method compile_defmacro($/, $node) {
 method compile_node($/, $node) {
     our %?MACROS;
     my $first := first($node);
-say("Compiling: ");say($node);
-say("first: ");say($first);
+#say("Compiling: ");say($node);
+#say("first: ");say($first);
 
     if ($first.name eq "fn")
     {
@@ -273,7 +273,7 @@ say("first: ");say($first);
     {
        return compile_defmacro(self, $/, $node);
     }
-    _dumper($first, "first");
+#_dumper($first, "first");
     my $mac := %?MACROS{$first.name};
     if ($mac) {
         $node := rest($node);
@@ -283,8 +283,8 @@ say("first: ");say($first);
            @args[$i] := first($node);
             $node := rest($node);
         }
-        say(exec_macro($mac, @args));
-        return to_past(self, exec_macro($mac, @args));
+#say(exec_macro($/, $mac, @args));
+        return to_past(self, exec_macro($/, $mac, @args));
     }
     return compile_call(self, $/, $node);
 }

@@ -198,16 +198,14 @@ method compile_defmacro($/, $node) {
     my $name := first($node).name();
 
     my $macro := compile_fn(self, $/, $node, $name, 'declaration');
-
+    $macro.hll('reason');
     _dumper($macro, "macro");
-## To Finish compiling a PAST and execute it
-    my $compiler := Q:PIR { %r = compreg 'PAST' };
-    my $code := $compiler.compile($macro);
-    _dumper($code, "code");
-#   MAGIC GOES HERE
-#    $code(2);
-#     foo(1);
 
+    ## Finish compiling a PAST
+    my $compiler := Q:PIR { %r = compreg 'PAST' };
+    my $code := $compiler.compile($macro);#, :target('PIR'));
+
+    $code(1);
 
     return $macro;
 }

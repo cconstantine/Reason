@@ -1,2 +1,6 @@
-(defn foo (x) (say x))
-(foo 1)
+(defn func (x) (say 'ok ' x))
+(say '1..4')
+(func 1)
+(func 2)
+(func 3)
+(func 4)

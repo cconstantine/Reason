@@ -34,10 +34,16 @@ method TOP($/) {
       $past.push(to_past(self, $_.ast));
     }
 #    _dumper($past, "AST");
+## To Finish compiling a PAST and execute it
+#    my $compiler := Q:PIR { %r = compreg 'PAST' };
+#    _dumper($compiler, "compiler");
+#    my $code := $compiler.compile($past);
+#    $code[0]();
+
     make $past;
 }
 
-method compile_fn($/, $node, $name) {
+method compile_fn($/, $node, $name, $type) {
     # Strip off leading 'fn'
     $node := rest($node);
 
@@ -46,11 +52,11 @@ method compile_fn($/, $node, $name) {
  
     my $block;
     if ($name) {
-        $block := PAST::Block.new( :blocktype('declaration'),
+        $block := PAST::Block.new( :blocktype($type),
                                    :name($name),
                                    :node($/) );
     } else {
-        $block := PAST::Block.new( :blocktype('declaration'),
+        $block := PAST::Block.new( :blocktype($type),
                                    :node($/) );
     }
     my $stmts := PAST::Stmts.new();
@@ -183,16 +189,25 @@ method compile_defn($/, $node) {
     $node := rest($node);
     my $name := first($node).name();
 
-    return compile_fn(self, $/, $node, $name);
+    return compile_fn(self, $/, $node, $name, 'declaration');
 }
 
 method compile_defmacro($/, $node) {
-    my $macro := compile_defn(self, $/, $node);
+    # Strip off leading 'defn'
+    $node := rest($node);
+    my $name := first($node).name();
 
+    my $macro := compile_fn(self, $/, $node, $name, 'declaration');
+
+    _dumper($macro, "macro");
 ## To Finish compiling a PAST and execute it
-#    my $compiler := Q:PIR { %r = compreg 'PAST' };
-#    my $code := $compiler.compile($macro);
-#    $code[0]();
+    my $compiler := Q:PIR { %r = compreg 'PAST' };
+    my $code := $compiler.compile($macro);
+    _dumper($code, "code");
+#   MAGIC GOES HERE
+#    $code(2);
+#     foo(1);
+
 
     return $macro;
 }
@@ -203,7 +218,7 @@ method compile_node($/, $node) {
 
     if ($first.name eq "fn")
     {
-	return compile_fn(self, $/, $node, NULL);
+	return compile_fn(self, $/, $node, NULL, 'declaration');
     }
     elsif ($first.name eq "let")
     {

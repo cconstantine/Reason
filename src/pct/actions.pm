@@ -207,7 +207,8 @@ method compile_quote($/, $node) {
     @?QUOTES.push(first($node));
     return PAST::Var.new(:scope('keyed'),
                   PAST::Var.new(:scope('package'),
-                                :name('@?QUOTES')),
+                                :namespace( ('Reason', 'Grammar', 'Actions') ), :name('@?QUOTES'),
+                                ),
                   PAST::Val.new(:value(+@?QUOTES - 1)));
 
 #    my $stmts := PAST::Stmts.new();

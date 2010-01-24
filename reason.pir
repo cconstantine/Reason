@@ -58,6 +58,8 @@ object.
     set_hll_global ['Reason';'Grammar';'Actions'], '@?LIBRARY', $P0
     $P0 = new 'Hash'
     set_hll_global ['Reason';'Grammar';'Actions'], '%?MACROS', $P0
+    $P0 = new 'ResizablePMCArray'
+    set_hll_global ['Reason';'Grammar';'Actions'], '@?QUOTES', $P0
 .end
 
 =item main(args :slurpy)  :main

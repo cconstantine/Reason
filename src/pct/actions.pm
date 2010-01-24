@@ -208,7 +208,7 @@ method compile_quote($/, $node) {
     return PAST::Var.new(:scope('keyed'),
                   PAST::Var.new(:scope('package'),
                                 :name('@?QUOTES')),
-                  PAST::Val.new(:value(size(@?QUOTES) - 1)));
+                  PAST::Val.new(:value(+@?QUOTES - 1)));
 
 #    my $stmts := PAST::Stmts.new();
 #    $stmts.push( first($node) );

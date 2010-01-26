@@ -2,6 +2,13 @@
 
 .namespace [ 'Reason';'Grammar';'Actions' ]
 
+.sub 'parse_list'
+     .param pmc args
+     $P0 = 'list'(args :flat)
+
+     .return ($P0)
+.end
+
 .sub 'to_past' :multi(_, _)
      .param pmc arg
      .param pmc ast
@@ -13,8 +20,11 @@
      .param pmc arg
      .param pmc ast
 
+     .local pmc cons_hash
+     cons_hash = get_global '%?CONS'
+     
      .local pmc node
-     node = getattribute ast, 'node'
+     node = cons_hash[ast]
 
      $P1 = arg.'compile_node'(node, ast)
      .return ($P1)
@@ -45,11 +55,9 @@
 .end
 
 .sub 'exec_macro'
-     .param pmc node
      .param pmc macro
      .param pmc args
 
      $P0 = macro(args :flat)
-     setattribute $P0, 'node', node
-     .return ($P0)
+      .return ($P0)
 .end

@@ -38,6 +38,7 @@ method TOP($/) {
     }
 #    _dumper($past, "AST");
 
+    our %?CONS := NULL;
     make $past;
 }
 
@@ -235,6 +236,7 @@ method compile_defmacro($/, $node) {
 }
 
 method compile_macro($/, $node) {
+    our %?CONS;
     our %?MACROS;
     my $mac := %?MACROS{first($node).name};
     $node := rest($node);
@@ -245,7 +247,9 @@ method compile_macro($/, $node) {
         $node := rest($node);
     }
 #say(exec_macro($/, $mac, @args));
-    return to_past(self, exec_macro($/, $mac, @args));
+    my $macro_result := exec_macro($mac, @args);
+    %?CONS{$macro_result} := $/;
+    return to_past(self, $macro_result);
 }
 
 method compile_node($/, $node) {
@@ -291,6 +295,7 @@ method compile_node($/, $node) {
 
 
 method expr($/) {
+    our %?CONS;
     my $items;
     my @item_array;
     my $i;
@@ -299,7 +304,8 @@ method expr($/) {
         @item_array[$i] := $_.ast;
         $i := $i + 1;
     }
-    $items := parse_list($/, @item_array);
+    $items := parse_list(@item_array);
+    %?CONS{$items} := $/;
     make $items;
 }
 

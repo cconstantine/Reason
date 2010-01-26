@@ -51,6 +51,8 @@ object.
     reason.'parsegrammar'($P0)
     $P0 = get_hll_namespace ['Reason';'Grammar';'Actions']
     reason.'parseactions'($P0)
+    $P0 = new 'Hash'
+    set_hll_global ['Reason';'Grammar';'Actions'], '%?CONS', $P0
     ## Create a list for holding the stack of nested blocks
     $P0 = new 'ResizablePMCArray'
     set_hll_global ['Reason';'Grammar';'Actions'], '@?BLOCK', $P0

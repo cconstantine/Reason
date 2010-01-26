@@ -37,11 +37,6 @@ method TOP($/) {
       }
     }
 #    _dumper($past, "AST");
-## To Finish compiling a PAST and execute it
-#    my $compiler := Q:PIR { %r = compreg 'PAST' };
-#    _dumper($compiler, "compiler");
-#    my $code := $compiler.compile($past);
-#    $code[0]();
 
     make $past;
 }
@@ -239,6 +234,20 @@ method compile_defmacro($/, $node) {
     return NULL;
 }
 
+method compile_macro($/, $node) {
+    our %?MACROS;
+    my $mac := %?MACROS{first($node).name};
+    $node := rest($node);
+    my @args;
+    my $i := 0;
+    while ($node) {
+       @args[$i] := first($node);
+        $node := rest($node);
+    }
+#say(exec_macro($/, $mac, @args));
+    return to_past(self, exec_macro($/, $mac, @args));
+}
+
 method compile_node($/, $node) {
     our %?MACROS;
     my $first := first($node);
@@ -274,17 +283,8 @@ method compile_node($/, $node) {
        return compile_defmacro(self, $/, $node);
     }
 #_dumper($first, "first");
-    my $mac := %?MACROS{$first.name};
-    if ($mac) {
-        $node := rest($node);
-        my @args;
-        my $i := 0;
-        while ($node) {
-           @args[$i] := first($node);
-            $node := rest($node);
-        }
-#say(exec_macro($/, $mac, @args));
-        return to_past(self, exec_macro($/, $mac, @args));
+    if (%?MACROS{$first.name}) {
+        return compile_macro(self, $/, $node);
     }
     return compile_call(self, $/, $node);
 }

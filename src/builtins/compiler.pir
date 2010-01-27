@@ -54,6 +54,17 @@
      .return ()
 .end
 
+.sub 'name' :multi(_)
+     .param pmc arg
+     .return ("")
+.end
+
+.sub 'name' :multi(['PAST';'Var'])
+     .param pmc arg
+     $S0 = arg.'name'()
+     .return ($S0)
+.end
+
 .sub 'exec_macro'
      .param pmc macro
      .param pmc args

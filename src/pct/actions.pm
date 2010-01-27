@@ -257,37 +257,38 @@ method compile_node($/, $node) {
     my $first := first($node);
 #say("Compiling: ");say($node);
 #say("first: ");say($first);
+    my $n := name($first);
 
-    if ($first.name eq "fn")
+    if ($n eq "fn")
     {
 	return compile_fn(self, $/, $node, NULL, 'declaration');
     }
-    elsif ($first.name eq "let")
+    elsif ($n eq "let")
     {
         return compile_let(self, $/, $node);
     }
-    elsif ($first.name eq "if")
+    elsif ($n eq "if")
     {
         return compile_if(self, $/, $node);
     }
-    elsif ($first.name eq "def")
+    elsif ($n eq "def")
     {
         return compile_def(self, $/, $node);
     }
-    elsif ($first.name eq "defn")
+    elsif ($n eq "defn")
     {
         return compile_defn(self, $/, $node);
     }
-    elsif ($first.name eq "quote")
+    elsif ($n eq "quote")
     {
        return compile_quote(self, $/, $node);
     }
-    elsif ($first.name eq "defmacro")
+    elsif ($n eq "defmacro")
     {
        return compile_defmacro(self, $/, $node);
     }
 #_dumper($first, "first");
-    if (%?MACROS{$first.name}) {
+    if (%?MACROS{$n}) {
         return compile_macro(self, $/, $node);
     }
     return compile_call(self, $/, $node);

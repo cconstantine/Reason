@@ -94,6 +94,24 @@ method compile_call($/, $node) {
    return $past;
 }
 
+method compile_tcall($/, $node) {
+    $node := rest($node);
+    say("tcall begin");
+
+    my $past := PAST::Op.new(
+        :pasttype('pirop'),
+        :node( $/ ),
+        :pirop('tailcall')
+    );
+
+    while ($node) {
+        $past.push(to_past(self, first($node)));
+        $node := rest($node);
+    }
+
+    return $past;
+}
+
 method decorate_node($node, $name, $scope) {
     for $node.iterator {
         decorate(self, $_, $name, $scope);
@@ -287,7 +305,11 @@ method compile_node($/, $node) {
     {
        return compile_defmacro(self, $/, $node);
     }
-#_dumper($first, "first");
+    elsif ($n eq "tcall")
+    {
+       return compile_tcall(self, $/, $node);
+    }
+
     if (%?MACROS{$n}) {
         return compile_macro(self, $/, $node);
     }

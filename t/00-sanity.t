@@ -1,7 +1,0 @@
-(say '1..6')
-(say 'ok 1')
-(say 'ok ' 2)
-(say 'ok' ' ' 3)
-(say 'ok ' (+ 2 2))
-(say 'ok ' (/ (* 2 (+ 3 2)) 2))
-((fn (x) (say x)) 'ok 6')

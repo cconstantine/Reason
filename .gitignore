@@ -1,0 +1,10 @@
+Makefile
+src/gen_actions.pir
+src/gen_builtins.pir
+src/gen_grammar.pir
+reason
+reason.c
+reason.o
+reason.pbc
+
+*~

@@ -1,0 +1,5 @@
+(say '1..2')
+(def a 1)
+(def b 2)
+(say 'ok ' a)
+(say 'ok ' b)

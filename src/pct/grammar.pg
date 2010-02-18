@@ -1,0 +1,42 @@
+# $Id$
+
+=begin overview
+
+This is the grammar for Reason written as a sequence of Perl 6 rules.
+
+=end overview
+
+grammar Reason::Grammar is PCT::Grammar;
+
+rule TOP {
+    <term>*
+    [ $ || <panic: 'Syntax error'> ]
+    {*}
+}
+
+rule expr {
+    '('	<term>* ')' {*}
+}
+
+##  terms
+rule term {
+    | <value> {*}                                #= value
+    | <symbol> {*}                               #= symbol
+    | <expr> {*}                            	 #= expr
+}
+
+rule value {
+    | <integer> {*}                              #= integer
+    | <quote> {*}                                #= quote
+}
+
+token integer { \d+{*} }
+
+token quote {
+    [ \' <string_literal: '\'' > \' | \" <string_literal: '"' > \" ]
+    {*}
+}
+
+token symbol {
+      [_|\w|\+|\-|\*|\/|\.|\<|\>|\:|\^|\&|\%|\$|\#|\@|\!|\~|\=]+ {*}
+}

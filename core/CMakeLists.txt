@@ -1,11 +1,11 @@
-add_subdirectory(parser)
-
 include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}/parser/include
   parser/include
+  compiler/include
 )
 
+add_subdirectory(parser)
+add_subdirectory(compiler)
 
-add_executable(main main.cpp)
+add_executable(reason main.cpp)
 
-target_link_libraries(main ReasonParser)
+target_link_libraries(reason ReasonParser ReasonCompiler)

@@ -44,18 +44,12 @@ expr :
      ;
 
 expr_list : value {$$ = new NExpression($1, NULL);}
-| expr_list value 
-{
-  $$ = $1;
-  NExpression *c;
-  for(c = $1;c->rest;c = dynamic_cast<NExpression*>(c->rest));
-  c->rest = new NExpression($2, NULL);
-}
+| value expr_list { $$ = new NExpression($1, $2); }
 
 value : 
   ident 
 | numeric 
-| expr
+  | expr { $$ = $1;}
 ;
 
 ident : TIDENTIFIER { $$ = new NIdentifier(*$1); delete $1; }

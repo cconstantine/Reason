@@ -14,37 +14,19 @@ void NInteger::toString(std::ostream& s)
   s << value;
 }
 
-llvm::Value* NInteger::codeGen(CodeGenContext& context)
-{
-  return NULL;
-}
-
-
-
-
 NIdentifier::NIdentifier(const std::string& name)
   :name(name) 
-{
-
-}
+{ }
 
 void NIdentifier::toString(std::ostream& s)
 {
   s << name;
 }
 
-llvm::Value* NIdentifier::codeGen(CodeGenContext& context)
-{
-  return NULL;
-}
-
-
 
 NExpression::NExpression(Node * first, Node * rest)
   :first(first), rest(rest)
-{
-
-}
+{ }
 
 void NExpression::toString(std::ostream& s)
 {
@@ -62,10 +44,6 @@ void NExpression::toString(std::ostream& s)
   s << ")";    
 }
 
-llvm::Value* NExpression::codeGen(CodeGenContext& context)
-{
-  return NULL;
-}
 
 
 

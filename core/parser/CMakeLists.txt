@@ -13,12 +13,8 @@ FIND_PROGRAM (FLEX
   )
 
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/reason/parser")
-include_directories(
-  "${CMAKE_CURRENT_BINARY_DIR}/include"
-  "${CMAKE_CURRENT_SOURCE_DIR}/include" )
 
-
-
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 ADD_CUSTOM_COMMAND(
   OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp"
           "${CMAKE_CURRENT_BINARY_DIR}/include/reason/parser/lexer.h"
@@ -44,7 +40,6 @@ ADD_CUSTOM_COMMAND(
 
 ADD_LIBRARY(ReasonParser 
   node.cpp
-#  codegen.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
 )

@@ -12,7 +12,7 @@ FIND_PROGRAM (FLEX
   DOC "Lexer Generator"
   )
 
-file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include")
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/reason/parser")
 include_directories(
   "${CMAKE_CURRENT_BINARY_DIR}/include"
   "${CMAKE_CURRENT_SOURCE_DIR}/include" )
@@ -21,28 +21,30 @@ include_directories(
 
 ADD_CUSTOM_COMMAND(
   OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp"
-          "${CMAKE_CURRENT_BINARY_DIR}/include/lexer.h"
+          "${CMAKE_CURRENT_BINARY_DIR}/include/reason/parser/lexer.h"
   DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/lexer.l"
 
   COMMAND
   ${FLEX} 
-  --header-file="${CMAKE_CURRENT_BINARY_DIR}/include/lexer.h"
+  --header-file="${CMAKE_CURRENT_BINARY_DIR}/include/reason/parser/lexer.h"
   -o${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp
   "${CMAKE_CURRENT_SOURCE_DIR}/lexer.l"
   )
 
 ADD_CUSTOM_COMMAND(
   OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/parser.cpp"
-          "${CMAKE_CURRENT_BINARY_DIR}/include/parser.h"
+          "${CMAKE_CURRENT_BINARY_DIR}/include/reason/parser/parser.h"
   DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/parser.y"
   COMMAND
   ${BISON}
-  --defines=${CMAKE_CURRENT_BINARY_DIR}/include/parser.h
+  --defines=${CMAKE_CURRENT_BINARY_DIR}/include/reason/parser/parser.h
   -o${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/parser.y
 )
 
 ADD_LIBRARY(ReasonParser 
+  node.cpp
+#  codegen.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
 )

@@ -26,9 +26,7 @@ endmacro(add_reason_lib)
 add_subdirectory(parser)
 add_subdirectory(compiler)
 
-set(name reason)
 
-add_executable(${name} main.cpp)
-
-target_link_libraries(${name} ReasonParser)
-target_link_libraries(${name} ReasonCompiler)
+#Build temp ui
+add_executable(reason main.cpp)
+target_link_libraries(reason ReasonParser ReasonCompiler)

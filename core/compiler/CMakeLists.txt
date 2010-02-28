@@ -1,11 +1,8 @@
 include_directories(${CMAKE_MAIN_INCLUDE_DIR})
 
-set(LLVM_LINK_COMPONENTS core jit interpreter native)
+set (LLVM_LIBS core jit interpreter native)
+set (REASON_LIBS ReasonParser)
 
-add_llvm_library(ReasonCompiler
-  codegen.cpp
-)
+add_reason_lib(ReasonCompiler codegen.cpp)
 
-target_link_libraries(ReasonCompiler
-  ReasonParser
-)
+

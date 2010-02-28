@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <reason/parser/node.h>
+#include <reason/compiler/codegen.h>
 
 extern int yyparse();
 extern NExpression *programBlock;
@@ -14,6 +15,11 @@ int main(int argc, char* argv[])
     {
       programBlock->toString(std::cout);
       std::cout << std::endl;
+      {
+	CodeGenContext cgc;
+	cgc.generateCode(*programBlock);
+	cgc.runCode();
+      }
     }
   return 0;
 }

@@ -14,26 +14,15 @@ namespace llvm {
   struct GenericValue;
 }
 
-class CodeGenBlock {
-public:
-  llvm::BasicBlock *block;
-  std::map<std::string , llvm::Value*> locals;
-};
-
 class CodeGenContext {
 public:
   llvm::LLVMContext& c;
   llvm::Module module;
 
   CodeGenContext();
-  ~CodeGenContext();
   
-  void generateCode(Node& root);
-  void runCode();
-  void pushBlock(llvm::BasicBlock *block);
-  void popBlock();
-  
-  std::stack<CodeGenBlock  *> blocks;
-  llvm::Function *mainFunction;
+  llvm::GenericValue runCode(Node& root);
+ private:
+  llvm::Function* generateCode(Node& root);
 };
 

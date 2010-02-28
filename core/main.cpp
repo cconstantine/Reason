@@ -17,8 +17,7 @@ int main(int argc, char* argv[])
       std::cout << std::endl;
       {
 	CodeGenContext cgc;
-	cgc.generateCode(*programBlock);
-	cgc.runCode();
+	cgc.runCode(*programBlock);
       }
     }
   return 0;

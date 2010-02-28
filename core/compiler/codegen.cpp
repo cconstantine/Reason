@@ -24,30 +24,14 @@ CodeGenContext::CodeGenContext()
   : c(getGlobalContext()), module(StringRef(main_string), c)
 {}
 
-CodeGenContext::~CodeGenContext()
-{ }
-
-void CodeGenContext::pushBlock(BasicBlock *block) 
-{ 
-  blocks.push(new CodeGenBlock()); 
-  blocks.top()->block = block; 
-}
-
-void CodeGenContext::popBlock() 
+Function* CodeGenContext::generateCode(Node& root)
 {
-  CodeGenBlock *top = blocks.top(); 
-  blocks.pop(); 
-  delete top; 
-}
-
-void CodeGenContext::generateCode(Node& root)
-{
-    std::cout << "Generating code...\n";
-    mainFunction = 
-      cast<Function>(module.getOrInsertFunction("mainFunction",
+  Function* func = 
+      cast<Function>(module.getOrInsertFunction("func",
 						Type::getVoidTy(c),
 						(Type*)0));
-    BasicBlock *BB = BasicBlock::Create(c, "EntryBlock", mainFunction);
+    BasicBlock *BB = BasicBlock::Create(c, "EntryBlock", func);
+    //    BasicBlock *BB1 = BasicBlock::Create(c, "InnerBlock", func);
 
     // Get pointers to the constant `0'.
     Value *val;
@@ -55,18 +39,19 @@ void CodeGenContext::generateCode(Node& root)
     //val = root.codeGen(*this); /* emit bytecode for the toplevel block */
 
     ReturnInst::Create(c, val, BB);
-
-    std::cout << "Code is generated.\n";
+    return func;
 }
 
 /* Executes the AST by running the main function */
-void CodeGenContext::runCode() {
+GenericValue CodeGenContext::runCode(Node& root) {
   InitializeNativeTarget();
+  llvm::Function* f = generateCode(root);
   std::cout << "Running code...\n";
-  mainFunction->dump();
+  f->dump();
   ExecutionEngine *ee =  EngineBuilder(&module).create();
   
   std::vector<GenericValue> args;
-  ee->runFunction(mainFunction, args);
+  GenericValue gv = ee->runFunction(f, args);
   std::cout << "Code was run.\n";
+  return gv;
 }

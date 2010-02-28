@@ -43,8 +43,18 @@ void CodeGenContext::popBlock()
 void CodeGenContext::generateCode(Node& root)
 {
     std::cout << "Generating code...\n";
+    mainFunction = 
+      cast<Function>(module.getOrInsertFunction("mainFunction",
+						Type::getVoidTy(c),
+						(Type*)0));
+    BasicBlock *BB = BasicBlock::Create(c, "EntryBlock", mainFunction);
 
-    //    root.codeGen(*this); /* emit bytecode for the toplevel block */
+    // Get pointers to the constant `0'.
+    Value *val;
+    val = ConstantInt::get(Type::getInt32Ty(c), 0);
+    //val = root.codeGen(*this); /* emit bytecode for the toplevel block */
+
+    ReturnInst::Create(c, val, BB);
 
     std::cout << "Code is generated.\n";
 }

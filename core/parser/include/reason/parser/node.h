@@ -1,6 +1,7 @@
 #include <ostream>
 #include <vector>
 #include <llvm/Value.h>
+#include <reason/sequence.h>
 
 class CodeGenContext;
 class NExpression;
@@ -26,10 +27,14 @@ public:
     virtual void toString(std::ostream& s);
 };
 
-class NExpression : public Node {
+class NExpression : public Node, public seq{
 public:
-  Node * first;
-  Node * rest;
+  Node * m_first;
+  Node * m_rest;
   NExpression(Node * first, Node * rest);
+
+  virtual void* first() const;
+  virtual void* rest() const;
+
   virtual void toString(std::ostream& s);
 };

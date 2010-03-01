@@ -1,6 +1,7 @@
 include_directories(
   parser/include
   compiler/include
+  datastructures/include
 )
 
 

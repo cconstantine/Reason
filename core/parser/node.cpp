@@ -25,8 +25,18 @@ void NIdentifier::toString(std::ostream& s)
 
 
 NExpression::NExpression(Node * first, Node * rest)
-  :first(first), rest(rest)
+  :m_first(first), m_rest(rest)
 { }
+
+void * NExpression::first() const
+{
+  return (void*)m_first;
+}
+
+void * NExpression::rest() const
+{
+  return (void*)m_rest;
+}
 
 void NExpression::toString(std::ostream& s)
 {
@@ -34,10 +44,10 @@ void NExpression::toString(std::ostream& s)
   NExpression* cur = this;
   while (cur)
     {
-      if (cur->first)
-	cur->first->toString(s);
+      if (cur->m_first)
+	cur->m_first->toString(s);
 
-      cur = dynamic_cast<NExpression*>(cur->rest);
+      cur = dynamic_cast<NExpression*>(cur->m_rest);
       s << " ";
 
     }

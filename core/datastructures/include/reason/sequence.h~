@@ -1,0 +1,5 @@
+class seq
+{
+  virtual void * first() = 0;
+  virtual void * rest() = 0;
+};

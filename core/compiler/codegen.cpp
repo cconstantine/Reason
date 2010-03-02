@@ -21,7 +21,8 @@ using namespace llvm;
 
 std::string main_string("main");
 CodeGenContext::CodeGenContext()
-  : c(getGlobalContext()), module(StringRef(main_string), c), Builder(c)
+  : c(getGlobalContext()), module(StringRef(main_string), c), 
+   BB(NULL), func(NULL)
 {
   Function *plus = 
     cast<Function>(module.getOrInsertFunction("+",
@@ -58,34 +59,31 @@ Value* CodeGenContext::codeGen(Node* n)
       if (NIdentifier *indent = dynamic_cast<NIdentifier*>(first))
 	{
 	  std::string& name = indent->name;
-	  
+	  /*
 	  gen_tbl::iterator iter;
 	  iter = special_gen.find(name);
-	  /* This is a special form */
+	  // This is a special form 
 	  if (iter != special_gen.end())
 	    {
 	      GenFunc handler = iter->second;
 	      return handler(this, expr);
 	    }
-	  /* This is a function call */
-	  else
+	  // This is a function call
+	  else */
 	    {
 	      if (Function *f = module.getFunction(name))
 		{
 		  std::vector<Value*> args;
 		  while((expr = dynamic_cast<NExpression*>(expr->m_rest)))
 		    {
-		      std::cout << "Arg: ";expr->m_first->toString(std::cout);
-		      std::cout << std::endl;
 		      args.push_back( codeGen(expr->m_first) );
 		    }
-		  printf("args: %d\n", (int)args.size());
-		  return Builder.CreateCall(f, args.begin(), args.end(), name.c_str());
+		  return CallInst::Create(f, args.begin(), args.end(), name.c_str(), BB);
 		}
-		else
-		  {
-		    fprintf(stderr, "Unable to find function '%s'\n", name.c_str());
-		  }
+	      else
+		{
+		  //std::cerr <<  std::string("Unable to find function '") <<  name << "'" std::endl;
+		}
 	    }
 	      
 	}
@@ -94,14 +92,9 @@ Value* CodeGenContext::codeGen(Node* n)
 }
 
 
-Function* CodeGenContext::generateCode(Node* root)
+Function* CodeGenContext::generateCode(Node* root, Function* f)
 {
-  Function* func = 
-      cast<Function>(module.getOrInsertFunction("func",
-						Type::getVoidTy(c),
-						(Type*)0));
-    BasicBlock *BB = BasicBlock::Create(c, "EntryBlock", func);
-
+  func = f;
     // Get pointers to the constant `0'.
     Value *val = codeGen(root); /* emit bytecode for the toplevel block */
 
@@ -112,7 +105,12 @@ Function* CodeGenContext::generateCode(Node* root)
 /* Executes the AST by running the main function */
 GenericValue CodeGenContext::runCode(Node* root) {
   InitializeNativeTarget();
-  llvm::Function* f = generateCode(root);
+  llvm::Function* f = 
+      cast<Function>(module.getOrInsertFunction("func",
+						Type::getVoidTy(c),
+						(Type*)0));
+  BB = BasicBlock::Create(c, "EntryBlock", f);
+  generateCode(root, f);
   std::cout << "Running code...\n";
   f->dump();
   ExecutionEngine *ee =  EngineBuilder(&module).create();

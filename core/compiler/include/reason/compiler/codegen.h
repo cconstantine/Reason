@@ -22,7 +22,8 @@ class CodeGenContext {
 public:
   llvm::LLVMContext& c;
   llvm::Module module;
-  llvm::IRBuilder<> Builder;
+  llvm::BasicBlock *BB;
+  llvm::Function* func;
 
   CodeGenContext();
   
@@ -30,7 +31,7 @@ public:
   llvm::Value* codeGen(Node*n);
   gen_tbl special_gen;
  private:
-  llvm::Function* generateCode(Node* root);
+  llvm::Function* generateCode(Node* root, llvm::Function* f);
 
 };
 

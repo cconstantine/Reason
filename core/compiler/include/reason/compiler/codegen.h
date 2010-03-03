@@ -20,15 +20,13 @@ typedef std::map<std::string, GenFunc> gen_tbl;
 
 class CodeGenContext {
 public:
-  llvm::LLVMContext& c;
   llvm::Module module;
-  llvm::BasicBlock *BB;
   llvm::Function* func;
 
-  CodeGenContext();
+  CodeGenContext(Node*n);
   
-  llvm::GenericValue runCode(Node* root);
-  llvm::Value* codeGen(Node*n);
+  int main();
+  llvm::Value* codeGen(Node* root);
   gen_tbl special_gen;
  private:
   llvm::Function* generateCode(Node* root, llvm::Function* f);

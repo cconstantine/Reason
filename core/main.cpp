@@ -16,9 +16,9 @@ int main(int argc, char* argv[])
       programBlock->toString(std::cout);
       std::cout << std::endl;
       {
-	CodeGenContext cgc;
-	cgc.runCode(programBlock);
+	CodeGenContext cgc(programBlock);
+	return cgc.main();
       }
     }
-  return 0;
+  return 1;
 }

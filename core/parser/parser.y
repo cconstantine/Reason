@@ -10,7 +10,7 @@
 /* Represents the many different ways we can access our data */
 %union {
   Node *node;
-  NExpression *expr;
+  NCons *expr;
   std::string* string;
   int token;
 }
@@ -19,7 +19,7 @@
    match our tokens.l lex file. We also define the node type
    they represent.
  */
-%token <string> TIDENTIFIER TINTEGER
+%token <string> TIDENTIFIER TINTEGER TSTRING
 %token <token> OPEN_PARAN_TOKEN CLOSE_PARAN_TOKEN COMMA_TOKEN;
 
 /* Define the type of node our nonterminal symbols represent.
@@ -27,7 +27,7 @@
    we call an ident (defined by union type ident) we are really
    calling an (NIdentifier*). It makes the compiler happy.
  */
-%type <node> value ident numeric 
+%type <node> value ident numeric string
 %type <expr> expr expr_list
 
 
@@ -39,21 +39,27 @@ program : value { programBlock = $1; }
         ;
 
 expr : 
-  OPEN_PARAN_TOKEN CLOSE_PARAN_TOKEN { $$ = new NExpression (NULL, NULL);}
+  OPEN_PARAN_TOKEN CLOSE_PARAN_TOKEN { $$ = new NCons (NULL, NULL);}
 | OPEN_PARAN_TOKEN expr_list CLOSE_PARAN_TOKEN { $$ = $2; }
      ;
 
-expr_list : value {$$ = new NExpression($1, NULL);}
-| value expr_list { $$ = new NExpression($1, $2); }
+expr_list : value {$$ = new NCons($1, NULL);}
+| value expr_list { $$ = new NCons($1, $2); }
 
 value : 
   ident 
 | numeric 
-  | expr { $$ = $1;}
+| string
+| expr { $$ = $1;}
 ;
 
 ident : TIDENTIFIER { $$ = new NIdentifier(*$1); delete $1; }
       ;
+
+string : TSTRING { $$ = new NString(*$1); delete $1; }
+      ;
+
+
 
 numeric : TINTEGER { $$ = new NInteger(*$1); delete $1;}
         ;

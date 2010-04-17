@@ -6,30 +6,23 @@
 #include <stack>
 #include <map>
 
-class Node;
-
 namespace llvm {
-  class BasicBlock;
-  class Function;
   class Value;
-  struct GenericValue;
 }
 
-typedef llvm::Value*(*GenFunc)(CodeGenContext* cgc, NExpression*);
-typedef std::map<std::string, GenFunc> gen_tbl;
+//typedef llvm::Value*(*GenFunc)(CodeGenContext* cgc, NCons*);
+//typedef std::map<std::string, GenFunc> gen_tbl;
+
+typedef std::map<std::string, llvm::Value*> SymbolTable;
 
 class CodeGenContext {
 public:
-  llvm::Module module;
-  llvm::Function* func;
+  llvm::Module& module;
+  llvm::Function * func;
 
-  CodeGenContext(Node*n);
+  CodeGenContext(llvm::Module& m, llvm::Function*f);
   
-  int main();
-  llvm::Value* codeGen(Node* root);
-  gen_tbl special_gen;
- private:
-  llvm::Function* generateCode(Node* root, llvm::Function* f);
-
+  SymbolTable symbols;
+  //  gen_tbl special_gen;
 };
 

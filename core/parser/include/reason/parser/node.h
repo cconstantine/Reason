@@ -1,15 +1,16 @@
 #include <ostream>
-#include <vector>
-#include <llvm/Value.h>
-#include <reason/sequence.h>
+
+namespace llvm {
+  class Value;
+}
 
 class CodeGenContext;
-class NExpression;
 
 class Node {
 public:
-    virtual ~Node() {}
-    virtual void toString(std::ostream& s) = 0;
+  virtual ~Node() {}
+  virtual llvm::Value* compile(CodeGenContext& cgc) = 0;
+  virtual void toString(std::ostream& s) = 0;
 };
 
 class NInteger : public Node {
@@ -17,24 +18,38 @@ class NInteger : public Node {
   std::string value;
   NInteger(const std::string& value);
 
+  virtual llvm::Value* compile(CodeGenContext& cgc);
   virtual void toString(std::ostream& s);
 };
 
 class NIdentifier : public Node {
 public:
+  std::string name;
+  NIdentifier(const std::string& name);
+  
+  virtual llvm::Value* compile(CodeGenContext& cgc);
+  virtual void toString(std::ostream& s);
+};
+
+class NString : public Node {
+public:
     std::string name;
-    NIdentifier(const std::string& name);
+    NString(const std::string& name);
+
+    virtual llvm::Value* compile(CodeGenContext& cgc);
     virtual void toString(std::ostream& s);
 };
 
-class NExpression : public Node, public seq{
+class NCons : public Node
+{
 public:
   Node * m_first;
   Node * m_rest;
-  NExpression(Node * first, Node * rest);
+  NCons(Node * first, Node * rest);
 
-  virtual void* first() const;
-  virtual void* rest() const;
+  virtual const Node* first() const;
+  virtual const Node* rest() const;
 
+  virtual llvm::Value* compile(CodeGenContext& cgc);
   virtual void toString(std::ostream& s);
 };

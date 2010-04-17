@@ -36,7 +36,7 @@ public:
     std::string name;
     NString(const std::string& name);
 
-    virtual llvm::Value* compile(CodeGenContext& cgc);
+    virtual llvm::Value* compile(CodeGenContext& cgc){return NULL;}
     virtual void toString(std::ostream& s);
 };
 

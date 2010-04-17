@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdio.h>
-#include <reason/parser/node.h>
+#include <reason/node.h>
 #include <reason/compiler/codegen.h>
 
 #include <llvm/Function.h>
@@ -33,17 +33,17 @@ int main(int argc, char* argv[])
 
       llvm::InitializeNativeTarget();
 
-      llvm::LLVMContext c = getGlobalContext();
-      llvm::Module module(StringRef(name), c);
-      /*
+      llvm::LLVMContext &c = getGlobalContext();
+      llvm::Module module(StringRef("main"), c);
+      
       llvm::Function* func = 
-	cast<Function>(module.getOrInsertFunction(name.c_str(),
+	cast<Function>(module.getOrInsertFunction("main",
 						  Type::getInt32Ty(c),
 						  (Type*)0));
 
-      CodeGenContext cgc(m, func);
+      CodeGenContext cgc(module, func);
 
-      /***** Create dummy buildtin '+' ******
+      /***** Create dummy buildtin '+' ******/
       Function *plus = 
 	cast<Function>(module.getOrInsertFunction("+",
 						  Type::getInt32Ty(c),
@@ -61,22 +61,22 @@ int main(int argc, char* argv[])
       Instruction *Add = BinaryOperator::CreateAdd(&arg1, &arg2, "addresult", BB);
       ReturnInst::Create(c, Add, BB);
       plus->dump();
-      /**************************************
+      /**************************************/
       
       
 
       BasicBlock::Create(c, "EntryBlock", func);
-
       Value *val = programBlock->compile(cgc);
-      
       ReturnInst::Create(c, val, &func->back());
+
+      func->dump();
 
       ExecutionEngine *ee =  EngineBuilder(&module).create();
       MainFunc* main_func = (MainFunc*)(ee->getPointerToFunction(func));
 
       int ret = (*main_func)();
       std::cout << "Code was run: " << ret << std::endl;
-      */
+      
       return 1;//ret;
     }
 

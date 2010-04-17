@@ -1,6 +1,6 @@
 #include <string>
 #include <iostream>
-#include <reason/parser/node.h>
+#include <reason/node.h>
 #include <reason/compiler/codegen.h>
 
 using namespace llvm;

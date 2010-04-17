@@ -39,7 +39,6 @@ ADD_CUSTOM_COMMAND(
 )
 
 add_library(ReasonParser 
-  node.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
 )

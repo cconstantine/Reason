@@ -11,4 +11,5 @@ add_subdirectory(compiler)
 
 #Build temp ui
 add_executable(reason main.cpp)
-target_link_libraries(reason ReasonParser ReasonCompiler)
+set (LLVM_LIBS llvmbitreader)
+target_link_libraries(reason LLVMBitReader ReasonParser ReasonCompiler)

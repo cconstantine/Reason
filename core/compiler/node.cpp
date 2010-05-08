@@ -11,7 +11,7 @@ NInteger::NInteger(const std::string& value)
 
 llvm::Value* NInteger::compile(CodeGenContext& cgc)
 {
-  llvm::LLVMContext& c = cgc.module.getContext();
+  llvm::LLVMContext& c = cgc.module->getContext();
 
   //TODO THIS IS HORRIBLE!
   unsigned int i = atoi(value.c_str());
@@ -48,6 +48,14 @@ NString::NString(const std::string& name)
   :name(name) 
 { }
 
+llvm::Value* NString::compile(CodeGenContext& cgc)
+{
+  llvm::LLVMContext& c = cgc.module->getContext();
+  llvm::Value* v = MDString::get (c, StringRef(name.c_str()));
+  v->dump();
+  return v;
+}
+
 void NString::toString(std::ostream& s)
 {
   s << name;
@@ -76,8 +84,9 @@ llvm::Value* NCons::compile(CodeGenContext& cgc)
       std::string& name = indent->name;
       
       // This is a function call
-      if (Function *f = cgc.module.getFunction(name))
+      if (Function *f = cgc.module->getFunction(name))
 	{
+	  f->dump();
 	  std::vector<Value*> args;
 	  while((expr = dynamic_cast<NCons*>(expr->m_rest)))
 	    {

@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include <string>
-#include <reason/parser/node.h>
+#include <reason/node.h>
 #include <reason/parser/parser.h>
 #define SAVE_TOKEN yylval.string = new std::string(yytext, yyleng)
 #define TOKEN(t) (yylval.token = t)

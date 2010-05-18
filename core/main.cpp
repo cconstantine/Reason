@@ -77,8 +77,6 @@ int main(int argc, char* argv[])
       ReturnInst::Create(c, Add, BB);
       /**************************************/
       
-      
-
       BasicBlock::Create(c, "EntryBlock", func);
       Value *val = programBlock->compile(cgc);
       ReturnInst::Create(c, val, &func->back());

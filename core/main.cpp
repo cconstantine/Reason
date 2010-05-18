@@ -14,6 +14,8 @@
 #include <llvm/Target/TargetSelect.h>
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Support/IRBuilder.h>
+#include <llvm/Support/MemoryBuffer.h>
+#include <llvm/Bitcode/ReaderWriter.h>
 
 extern int yyparse();
 extern NCons *programBlock;
@@ -22,22 +24,35 @@ typedef int (MainFunc)();
 
 using namespace llvm;
 
+const char builtins[] = "reason/lib/builtins.o";
+
 int main(int argc, char* argv[])
 {
   std::cout <<  "> ";
   yyparse();
   if (programBlock)
     {
+      std::string error;
       programBlock->toString(std::cout);
       std::cout << std::endl;
 
       llvm::InitializeNativeTarget();
 
       llvm::LLVMContext &c = getGlobalContext();
-      llvm::Module module(StringRef("main"), c);
+      llvm::Module *module;
+      if (MemoryBuffer* buf = MemoryBuffer::getFile(builtins, &error))
+	{
+	  module = ParseBitcodeFile(buf, c);
+	  delete buf;
+	}
+      else
+	{
+	  std::cerr << "Failed to load " << builtins << std::endl;
+	  return 1;
+	}
       
       llvm::Function* func = 
-	cast<Function>(module.getOrInsertFunction("main",
+	cast<Function>(module->getOrInsertFunction("main",
 						  Type::getInt32Ty(c),
 						  (Type*)0));
 
@@ -45,7 +60,7 @@ int main(int argc, char* argv[])
 
       /***** Create dummy buildtin '+' ******/
       Function *plus = 
-	cast<Function>(module.getOrInsertFunction("+",
+	cast<Function>(module->getOrInsertFunction("+",
 						  Type::getInt32Ty(c),
 						  Type::getInt32Ty(c),
 						  Type::getInt32Ty(c),
@@ -60,7 +75,6 @@ int main(int argc, char* argv[])
       BasicBlock *BB = BasicBlock::Create(c, "EntryBlock", plus);
       Instruction *Add = BinaryOperator::CreateAdd(&arg1, &arg2, "addresult", BB);
       ReturnInst::Create(c, Add, BB);
-      plus->dump();
       /**************************************/
       
       
@@ -69,9 +83,9 @@ int main(int argc, char* argv[])
       Value *val = programBlock->compile(cgc);
       ReturnInst::Create(c, val, &func->back());
 
-      func->dump();
+      module->dump();
 
-      ExecutionEngine *ee =  EngineBuilder(&module).create();
+      ExecutionEngine *ee =  EngineBuilder(module).create();
       MainFunc* main_func = (MainFunc*)(ee->getPointerToFunction(func));
 
       int ret = (*main_func)();

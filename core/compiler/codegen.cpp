@@ -18,7 +18,7 @@ using namespace llvm;
 
 std::string main_string("main");
 
-CodeGenContext::CodeGenContext(Module& m, Function*f)
+CodeGenContext::CodeGenContext(Module* m, Function*f)
   : module(m),
     func(f)
 {

@@ -1,6 +1,6 @@
 %{
 #include <stdio.h>
-#include <reason/parser/node.h>
+#include <reason/node.h>
   Node *programBlock; /* the top level root node of our final AST */
   
   extern int yylex();

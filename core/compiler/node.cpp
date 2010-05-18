@@ -11,7 +11,7 @@ NInteger::NInteger(const std::string& value)
 
 llvm::Value* NInteger::compile(CodeGenContext& cgc)
 {
-  llvm::LLVMContext& c = cgc.module.getContext();
+  llvm::LLVMContext& c = cgc.module->getContext();
 
   //TODO THIS IS HORRIBLE!
   unsigned int i = atoi(value.c_str());
@@ -48,6 +48,25 @@ NString::NString(const std::string& name)
   :name(name) 
 { }
 
+llvm::Value* NString::compile(CodeGenContext& cgc)
+{
+  std::cout << " name: '" << name << "'" << std::endl;
+  llvm::LLVMContext& c = cgc.module->getContext();
+  llvm::Constant* v = llvm::ConstantArray::get (c, StringRef(name.c_str()));
+
+  llvm::Value* var = new GlobalVariable(*(cgc.module), v->getType(), true, llvm::GlobalValue::InternalLinkage, v, name.c_str());
+  var->dump();
+
+  llvm::Value* zero = ConstantInt::get(Type::getInt32Ty(c), 0);
+  llvm::Value* args[] = {zero, zero};
+
+  std::cout << "Compiling" << std::endl;
+  llvm::Value *ret =  GetElementPtrInst::CreateInBounds(var, args, args+2, name.c_str(), &cgc.func->back());
+  std::cout << "Dumping" << std::endl;
+  ret->dump();
+  return ret;
+}
+
 void NString::toString(std::ostream& s)
 {
   s << name;
@@ -76,8 +95,9 @@ llvm::Value* NCons::compile(CodeGenContext& cgc)
       std::string& name = indent->name;
       
       // This is a function call
-      if (Function *f = cgc.module.getFunction(name))
+      if (Function *f = cgc.module->getFunction(name))
 	{
+	  f->dump();
 	  std::vector<Value*> args;
 	  while((expr = dynamic_cast<NCons*>(expr->m_rest)))
 	    {

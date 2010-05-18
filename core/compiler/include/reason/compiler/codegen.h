@@ -17,10 +17,10 @@ typedef std::map<std::string, llvm::Value*> SymbolTable;
 
 class CodeGenContext {
 public:
-  llvm::Module& module;
+  llvm::Module* module;
   llvm::Function * func;
 
-  CodeGenContext(llvm::Module& m, llvm::Function*f);
+  CodeGenContext(llvm::Module* m, llvm::Function*f);
   
   SymbolTable symbols;
   //  gen_tbl special_gen;
